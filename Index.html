@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Community leaderboard of top Roblox speedrunners.">
+<title>TTTiers — Leaderboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#111827;--surface:#1a2332;--surface-alt:#1f2d3d;--card:#1e2a38;
+  --text:#e8f0fe;--muted:#7a9bbf;--border:rgba(120,160,220,0.12);--border-h:rgba(100,200,180,0.35);
+  --mint:#34d399;--mint-s:rgba(52,211,153,0.15);--mint-d:#10b981;
+  --purple:#a78bfa;--purple-s:rgba(167,139,250,0.15);
+  --gold:#fbbf24;--gold-s:rgba(251,191,36,0.18);
+  --silver:#94a3b8;--silver-s:rgba(148,163,184,0.18);
+  --bronze:#f97316;--bronze-s:rgba(249,115,22,0.18);
+  --tf-bg:rgba(239,68,68,.18);    --tf-c:#fca5a5;
+  --td-bg:rgba(249,115,22,.18);   --td-c:#fdba74;
+  --tc-bg:rgba(234,179,8,.18);    --tc-c:#fde047;
+  --tb-bg:rgba(59,130,246,.18);   --tb-c:#93c5fd;
+  --ta-bg:rgba(52,211,153,.18);   --ta-c:#6ee7b7;
+  --ts-bg:rgba(251,191,36,.22);   --ts-c:#fcd34d;
+  --tss-bg:rgba(167,139,250,.25); --tss-c:#c4b5fd;
+  --tz-bg:rgba(236,72,153,.28);   --tz-c:#f9a8d4;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 0%,rgba(52,211,153,.06),transparent 50%),radial-gradient(ellipse at 80% 0%,rgba(167,139,250,.06),transparent 50%);pointer-events:none;z-index:0;}
+.page{position:relative;z-index:1;max-width:1300px;margin:0 auto;padding:24px 20px 60px;}
+ 
+.topbar{display:flex;align-items:center;justify-content:space-between;padding-bottom:28px;flex-wrap:wrap;gap:12px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand-mark{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--mint),#059669);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#fff;}
+.brand-name{font-size:1.3rem;font-weight:800;letter-spacing:-.04em;}
+.nav-links{display:flex;gap:8px;flex-wrap:wrap;}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:.85rem;font-weight:700;padding:7px 14px;border-radius:99px;border:1px solid var(--border);transition:all .18s;}
+.nav-links a:hover,.nav-links a.active{color:var(--mint);border-color:var(--mint-s);background:var(--mint-s);}
+ 
+.hero{text-align:center;margin-bottom:22px;}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:var(--mint-s);color:var(--mint);font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:5px 14px;border-radius:99px;border:1px solid rgba(52,211,153,.25);margin-bottom:12px;}
+.hero h1{font-size:clamp(1.9rem,4vw,3.2rem);font-weight:800;letter-spacing:-.04em;line-height:1.1;}
+.hero h1 em{font-style:normal;color:var(--mint);}
+.hero p{margin:10px auto 0;max-width:500px;color:var(--muted);font-size:.93rem;line-height:1.6;}
+ 
+.tier-legend{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:18px;}
+.tier-chip{display:flex;align-items:center;gap:4px;padding:4px 11px;border-radius:99px;font-size:.7rem;font-weight:800;border:1px solid transparent;}
+.tc-f  {background:var(--tf-bg); color:var(--tf-c); border-color:rgba(239,68,68,.2);}
+.tc-d  {background:var(--td-bg); color:var(--td-c); border-color:rgba(249,115,22,.2);}
+.tc-c  {background:var(--tc-bg); color:var(--tc-c); border-color:rgba(234,179,8,.2);}
+.tc-b  {background:var(--tb-bg); color:var(--tb-c); border-color:rgba(59,130,246,.2);}
+.tc-a  {background:var(--ta-bg); color:var(--ta-c); border-color:rgba(52,211,153,.2);}
+.tc-s  {background:var(--ts-bg); color:var(--ts-c); border-color:rgba(251,191,36,.3);}
+.tc-ss {background:var(--tss-bg);color:var(--tss-c);border-color:rgba(167,139,250,.3);}
+.tc-z  {background:var(--tz-bg); color:var(--tz-c); border-color:rgba(236,72,153,.35);}
+ 
+.search-wrap{position:relative;margin-bottom:14px;}
+.search-wrap svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:16px;height:16px;fill:var(--muted);opacity:.5;pointer-events:none;}
+#search{width:100%;padding:13px 18px 13px 44px;border-radius:14px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:.93rem;font-family:'Nunito',sans-serif;outline:none;transition:border-color .18s,box-shadow .18s;}
+#search:focus{border-color:var(--mint);box-shadow:0 0 0 3px rgba(52,211,153,.1);}
+#search::placeholder{color:var(--muted);opacity:.6;}
+ 
+/* Desktop grid: # | Player | Bounce | CC | Consist | Cam | NoBounce | Overall | Tier */
+.leaderboard{background:var(--surface);border:1px solid var(--border);border-radius:22px;overflow:hidden;}
+.lb-header,.player-item{
+  display:grid;
+  grid-template-columns:54px minmax(140px,1fr) 66px 66px 70px 66px 76px 90px 68px;
+  gap:4px;align-items:center;
+}
+.lb-header{padding:11px 14px;background:var(--surface-alt);border-bottom:1px solid var(--border);font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);}
+.lb-header div{display:flex;align-items:center;}
+.lb-header div:not(:nth-child(2)){justify-content:center;}
+.player-list{list-style:none;padding:8px;display:flex;flex-direction:column;gap:5px;}
+.player-item{padding:10px 6px;border-radius:14px;border:1px solid transparent;background:var(--card);cursor:pointer;transition:border-color .18s,background .18s,transform .15s;}
+.player-item:hover{border-color:var(--border-h);background:var(--surface-alt);transform:translateY(-1px);}
+ 
+.player-rank{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:10px;font-weight:800;font-size:.82rem;background:rgba(255,255,255,.05);color:var(--muted);}
+.player-rank.rank-1{background:var(--gold-s);color:var(--gold);}
+.player-rank.rank-2{background:var(--silver-s);color:var(--silver);}
+.player-rank.rank-3{background:var(--bronze-s);color:var(--bronze);}
+ 
+.player-info{display:flex;align-items:center;gap:8px;min-width:0;}
+.avatar{width:34px;height:34px;border-radius:50%;border:2px solid rgba(52,211,153,.28);background:var(--surface-alt);object-fit:cover;flex-shrink:0;opacity:0;transition:opacity .3s;}
+.player-text{min-width:0;}
+.player-username{font-weight:700;font-size:.83rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:4px;}
+.player-display{font-size:.71rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:4px;margin-top:1px;}
+.region-dot{display:inline-block;width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+ 
+/* stat cell: number + badge stacked */
+.score-cell{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;}
+.score-num{font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:600;color:var(--text);}
+ 
+.tier-badge{display:inline-flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:800;padding:1px 6px;border-radius:5px;letter-spacing:.03em;min-width:22px;}
+.tier-f  {background:var(--tf-bg); color:var(--tf-c);}
+.tier-d  {background:var(--td-bg); color:var(--td-c);}
+.tier-c  {background:var(--tc-bg); color:var(--tc-c);}
+.tier-b  {background:var(--tb-bg); color:var(--tb-c);}
+.tier-a  {background:var(--ta-bg); color:var(--ta-c);}
+.tier-s  {background:var(--ts-bg); color:var(--ts-c);}
+.tier-ss {background:var(--tss-bg);color:var(--tss-c);}
+.tier-z  {background:var(--tz-bg); color:var(--tz-c);}
+ 
+.overall-cell{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;}
+.overall-score{font-family:'JetBrains Mono',monospace;font-size:.86rem;font-weight:700;color:var(--mint);}
+.overall-max{font-size:.6rem;color:var(--muted);opacity:.55;}
+.overall-tier-cell{display:flex;align-items:center;justify-content:center;}
+.big-tier{font-size:.72rem;padding:3px 9px;}
+.device-icon{width:13px;height:13px;fill:var(--muted);opacity:.45;vertical-align:middle;}
+ 
+.pagination{display:flex;justify-content:center;align-items:center;gap:12px;margin-top:18px;}
+.pagination button{padding:9px 20px;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:12px;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:700;font-size:.85rem;transition:all .18s;}
+.pagination button:hover:not(:disabled){background:var(--mint-s);border-color:rgba(52,211,153,.4);color:var(--mint);}
+.pagination button:disabled{opacity:.3;cursor:not-allowed;}
+.page-info{font-size:.83rem;color:var(--muted);font-weight:600;}
+ 
+.skeleton-row{height:62px;border-radius:14px;background:linear-gradient(90deg,var(--surface-alt) 25%,var(--card) 50%,var(--surface-alt) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+ 
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(6px);z-index:200;align-items:center;justify-content:center;padding:20px;}
+.overlay.open{display:flex;}
+.popup{background:var(--surface);border:1px solid var(--border);border-radius:26px;padding:26px 22px 22px;max-width:370px;width:100%;position:relative;animation:popIn .28s cubic-bezier(.34,1.56,.64,1);}
+@keyframes popIn{from{opacity:0;transform:scale(.88) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.popup-rank-badge{position:absolute;top:20px;left:20px;width:36px;height:36px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.82rem;background:rgba(255,255,255,.05);color:var(--muted);}
+.popup-rank-badge.rank-1{background:var(--gold-s);color:var(--gold);}
+.popup-rank-badge.rank-2{background:var(--silver-s);color:var(--silver);}
+.popup-rank-badge.rank-3{background:var(--bronze-s);color:var(--bronze);}
+.popup-header{text-align:center;margin-bottom:14px;}
+#popup-avatar{width:74px;height:74px;border-radius:50%;border:3px solid var(--mint);object-fit:cover;margin-bottom:9px;box-shadow:0 0 20px rgba(52,211,153,.2);}
+.popup-name{font-size:1.08rem;font-weight:800;letter-spacing:-.02em;}
+.popup-display-name{font-size:.8rem;color:var(--muted);margin-top:2px;}
+.popup-meta{display:flex;gap:6px;justify-content:center;margin-top:8px;flex-wrap:wrap;}
+.popup-tag{font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:99px;background:rgba(255,255,255,.06);color:var(--muted);border:1px solid var(--border);text-transform:uppercase;display:inline-flex;align-items:center;gap:3px;}
+.popup-stats{display:grid;gap:4px;margin-bottom:13px;}
+.stat-row{display:flex;justify-content:space-between;align-items:center;padding:8px 13px;border-radius:10px;background:var(--surface-alt);border:1px solid var(--border);}
+.stat-label{font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:700;}
+.stat-value{display:flex;align-items:baseline;gap:4px;font-family:'JetBrains Mono',monospace;font-size:.98rem;font-weight:500;}
+.stat-max{font-size:.68rem;color:var(--muted);opacity:.5;}
+.stat-row.nb-row{border-color:rgba(167,139,250,.2);background:rgba(167,139,250,.06);}
+.stat-row.nb-row .stat-label{color:var(--purple);}
+.stat-row.ov-row{border-color:rgba(52,211,153,.25);background:rgba(52,211,153,.06);}
+.stat-row.ov-row .stat-label{color:var(--mint);}
+.stat-row.ov-row .stat-value{font-size:1.15rem;color:var(--mint);}
+.popup-links{display:flex;gap:8px;margin-bottom:11px;}
+.popup-link{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px;border-radius:12px;border:1px solid var(--border);background:var(--surface-alt);color:var(--muted);text-decoration:none;font-size:.82rem;font-weight:700;transition:all .18s;}
+.popup-link:hover{color:var(--mint);border-color:rgba(52,211,153,.35);background:var(--mint-s);}
+.popup-link img{width:15px;height:15px;border-radius:3px;object-fit:contain;}
+.popup-close{width:100%;padding:11px;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:12px;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:700;font-size:.88rem;transition:all .18s;}
+.popup-close:hover{background:var(--mint-s);color:var(--mint);border-color:rgba(52,211,153,.35);}
+.error-box{background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:28px 24px;max-width:300px;width:100%;text-align:center;animation:popIn .25s ease;}
+.error-box h2{font-size:1.1rem;font-weight:800;margin-bottom:8px;}
+.error-box p{color:var(--muted);font-size:.87rem;line-height:1.5;margin-bottom:16px;}
+ 
+/* ── RESPONSIVE ── */
+ 
+/* Tablet landscape: drop Consistency col (child 5) */
+@media(max-width:1080px){
+  .lb-header,.player-item{
+    grid-template-columns:50px minmax(130px,1fr) 62px 62px 62px 72px 84px 66px !important;
+    gap:3px;
+  }
+  .lb-header div:nth-child(5),
+  .player-item .score-cell:nth-child(5){display:none;}
+}
+ 
+/* Portrait phone: rank | player-info (name+icon only) | tier badge */
+@media(max-width:640px) and (orientation:portrait){
+  .lb-header,.player-item{
+    grid-template-columns:36px 1fr 50px !important;
+    gap:8px;padding:9px 10px;
+  }
+  /* hide all column headers except #, Player, Tier */
+  .lb-header div:nth-child(n+3):not(:last-child){display:none !important;}
+  /* hide all data cells except player-info and overall-tier */
+  .player-item>*:not(.player-rank):not(.player-info):not(.overall-tier-cell){display:none !important;}
+  /* within player-info: hide display name and avatar */
+  .player-display{display:none !important;}
+  .avatar{display:none !important;}
+  .player-rank{width:28px;height:28px;font-size:.75rem;border-radius:8px;}
+  .hero h1{font-size:1.65rem;}
+  .tier-legend{gap:4px;}
+  .tier-chip{font-size:.63rem;padding:3px 8px;}
+  /* bigger tier badge in portrait rows */
+  .big-tier{font-size:.78rem;padding:4px 10px;}
+}
+ 
+/* Landscape phone: show everything, compact */
+@media(max-width:900px) and (orientation:landscape){
+  .lb-header,.player-item{
+    grid-template-columns:42px minmax(110px,1fr) 56px 56px 56px 56px 64px 78px 62px !important;
+    gap:3px;padding:8px 5px;
+  }
+  .player-rank{width:28px;height:28px;font-size:.76rem;}
+  .avatar{width:28px;height:28px;}
+  .score-num{font-size:.72rem;}
+  .tier-badge{font-size:.56rem;padding:1px 5px;min-width:18px;}
+  .overall-score{font-size:.78rem;}
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">TT</div>
+      <div class="brand-name">TTTiers</div>
+    </div>
+    <nav class="nav-links">
+      <a href="index.html" class="active">Leaderboard</a>
+      <a href="stats.html">Stat Rankings</a>
+    </nav>
+  </header>
+ 
+  <section class="hero">
+    <div class="hero-badge">Top 50 Community Rankings</div>
+    <h1>Roblox <em>Speedrunners</em></h1>
+    <p>Ranked by Bounce, Corner Cutting, Consistency, Camera Control &amp; No Bounce.</p>
+  </section>
+ 
+  <div class="tier-legend">
+    <div class="tier-chip tc-f">F · 0–19</div>
+    <div class="tier-chip tc-d">D · 20–39</div>
+    <div class="tier-chip tc-c">C · 40–59</div>
+    <div class="tier-chip tc-b">B · 60–74</div>
+    <div class="tier-chip tc-a">A · 75–89</div>
+    <div class="tier-chip tc-s">S · 90–94</div>
+    <div class="tier-chip tc-ss">SS · 95–99</div>
+    <div class="tier-chip tc-z">Z · 100</div>
+  </div>
+ 
+  <div class="search-wrap">
+    <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+    <input type="text" id="search" placeholder="Search runner name… press Enter">
+  </div>
+ 
+  <section class="leaderboard">
+    <div class="lb-header">
+      <div>#</div>
+      <div>Player</div>
+      <div>Bounce</div>
+      <div>CC</div>
+      <div>Consist.</div>
+      <div>Cam</div>
+      <div>No Bounce</div>
+      <div>Overall</div>
+      <div>Tier</div>
+    </div>
+    <ul class="player-list" id="speedrunnerList">
+      <li class="skeleton-row"></li>
+      <li class="skeleton-row"></li>
+      <li class="skeleton-row"></li>
+      <li class="skeleton-row"></li>
+      <li class="skeleton-row"></li>
+    </ul>
+  </section>
+ 
+  <div class="pagination">
+    <button id="prev">&#8592; Prev</button>
+    <span class="page-info" id="page-info">Page 1 of 3</span>
+    <button id="next">Next &#8594;</button>
+  </div>
+</div>
+ 
+<div id="player-overlay" class="overlay">
+  <div class="popup">
+    <div id="popup-rank-badge" class="popup-rank-badge"></div>
+    <div class="popup-header">
+      <img id="popup-avatar" src="" alt="Player avatar">
+      <div class="popup-name" id="popup-main-name"></div>
+      <div class="popup-display-name" id="popup-display-name"></div>
+      <div class="popup-meta">
+        <span class="popup-tag" id="popup-region"></span>
+        <span class="popup-tag" id="popup-device"></span>
+        <span class="popup-tag" id="popup-tier-tag"></span>
+      </div>
+    </div>
+    <div class="popup-links">
+      <a id="popup-roblox" href="#" target="_blank" class="popup-link">
+        <img src="roblox.png" alt="" onerror="this.style.display='none'"> Roblox
+      </a>
+      <a id="popup-youtube" href="#" target="_blank" class="popup-link" style="display:none">
+        <img src="youtube.png" alt="" onerror="this.style.display='none'"> YouTube
+      </a>
+    </div>
+    <div class="popup-stats">
+      <div class="stat-row"><span class="stat-label">Bounce</span><span class="stat-value" id="popup-bounce"></span></div>
+      <div class="stat-row"><span class="stat-label">Corner Cutting</span><span class="stat-value" id="popup-cc"></span></div>
+      <div class="stat-row"><span class="stat-label">Consistency</span><span class="stat-value" id="popup-consistency"></span></div>
+      <div class="stat-row"><span class="stat-label">Camera Control</span><span class="stat-value" id="popup-cam"></span></div>
+      <div class="stat-row nb-row"><span class="stat-label">No Bounce</span><span class="stat-value" id="popup-nobounce"></span></div>
+      <div class="stat-row ov-row"><span class="stat-label">Overall</span><span class="stat-value" id="popup-overall"></span></div>
+    </div>
+    <button class="popup-close" id="popup-close">Close</button>
+  </div>
+</div>
+ 
+<div id="error-overlay" class="overlay">
+  <div class="error-box">
+    <h2>Runner not found 😅</h2>
+    <p>No one by that name is on the leaderboard. Check the spelling!</p>
+    <button class="popup-close" id="error-close">Got it</button>
+  </div>
+</div>
+ 
+<script>
+const REGION_MAP={NA:{name:"North America",color:"#60a5fa"},EU:{name:"Europe",color:"#34d399"},OC:{name:"Oceania",color:"#fbbf24"},AS:{name:"Asia",color:"#f87171"},SA:{name:"South America",color:"#a78bfa"},"N/A":{name:"Unknown",color:"#64748b"}};
+const TIERS=[
+  {min:0,  max:19,  cls:"tier-f",  label:"F"},
+  {min:20, max:39,  cls:"tier-d",  label:"D"},
+  {min:40, max:59,  cls:"tier-c",  label:"C"},
+  {min:60, max:74,  cls:"tier-b",  label:"B"},
+  {min:75, max:89,  cls:"tier-a",  label:"A"},
+  {min:90, max:94,  cls:"tier-s",  label:"S"},
+  {min:95, max:99,  cls:"tier-ss", label:"SS"},
+  {min:100,max:100, cls:"tier-z",  label:"Z"},
+];
+function getTier(v){return TIERS.find(t=>v>=t.min&&v<=t.max)||TIERS[0];}
+function getRegion(c){return REGION_MAP[(c||"").toUpperCase()]||REGION_MAP["N/A"];}
+function calcOverall(r){return(r.bounce||0)+(r.cc||0)+(r.consistency||0)+(r.cam||0)+(r.nobounce||0);}
+function avgScore(r){return Math.round(calcOverall(r)/5);}
+function sv(v,max=100){return `${v}<span class="stat-max"> / ${max}</span>`;}
+function tbHTML(v){const t=getTier(v);return `<span class="tier-badge ${t.cls}">${t.label}</span>`;}
+function deviceSVG(d){
+  if(d==="PC")return`<svg class="device-icon" viewBox="0 0 24 24"><path d="M21 2H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h7l-2 3v1h8v-1l-2-3h7c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 12H3V4h18v10z"/></svg>`;
+  if(d==="Mobile")return`<svg class="device-icon" viewBox="0 0 24 24"><path d="M17 2H7c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-5 18c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/></svg>`;
+  return "";
+}
+let runnersData=[],currentPage=1,totalPages=1;
+const PER_PAGE=20,avatarCache={};
+ 
+function renderPage(page){
+  currentPage=page;
+  const start=(page-1)*PER_PAGE,slice=runnersData.slice(start,start+PER_PAGE);
+  const list=document.getElementById("speedrunnerList");
+  list.innerHTML=slice.map((r,i)=>{
+    const rank=start+i+1,rc=rank===1?"rank-1":rank===2?"rank-2":rank===3?"rank-3":"";
+    const reg=getRegion(r.region),ov=calcOverall(r),ot=getTier(avgScore(r)),nb=r.nobounce||0;
+    return `<li class="player-item" data-userid="${r.id}" tabindex="0" role="button" aria-label="View ${r.name}">
+      <div class="player-rank ${rc}">${rank}</div>
+      <div class="player-info">
+        <img class="avatar" loading="lazy" src="" alt="${r.name}">
+        <div class="player-text">
+          <div class="player-username">${deviceSVG(r.device)} @${r.name}</div>
+          <div class="player-display"><span class="region-dot" style="background:${reg.color}"></span>(${r.display})</div>
+        </div>
+      </div>
+      <div class="score-cell"><span class="score-num">${r.bounce||0}</span>${tbHTML(r.bounce||0)}</div>
+      <div class="score-cell"><span class="score-num">${r.cc||0}</span>${tbHTML(r.cc||0)}</div>
+      <div class="score-cell"><span class="score-num">${r.consistency||0}</span>${tbHTML(r.consistency||0)}</div>
+      <div class="score-cell"><span class="score-num">${r.cam||0}</span>${tbHTML(r.cam||0)}</div>
+      <div class="score-cell nobounce-cell"><span class="score-num">${nb}</span>${tbHTML(nb)}</div>
+      <div class="overall-cell"><span class="overall-score">${ov}</span><span class="overall-max">/ 500</span></div>
+      <div class="overall-tier-cell"><span class="tier-badge big-tier ${ot.cls}">${ot.label}</span></div>
+    </li>`;
+  }).join("");
+  document.getElementById("page-info").textContent=`Page ${page} of ${totalPages}`;
+  document.getElementById("prev").disabled=page===1;
+  document.getElementById("next").disabled=page===totalPages;
+  list.querySelectorAll(".player-item").forEach(item=>{
+    const go=()=>{const r=runnersData.find(x=>x.id==item.dataset.userid);if(r)openPopup(r);};
+    item.onclick=go;item.onkeydown=e=>{if(e.key==="Enter"||e.key===" ")go();};
+  });
+  loadAvatars();
+}
+ 
+async function openPopup(runner){
+  const rank=runnersData.findIndex(r=>r.id==runner.id)+1;
+  const rb=document.getElementById("popup-rank-badge");
+  rb.textContent="#"+rank;rb.className="popup-rank-badge"+(rank<=3?" rank-"+rank:"");
+  document.getElementById("popup-main-name").textContent="@"+runner.name;
+  document.getElementById("popup-display-name").textContent="("+runner.display+")";
+  const reg=getRegion(runner.region);
+  const rel=document.getElementById("popup-region");
+  rel.textContent=reg.name;rel.style.color=reg.color;rel.style.borderColor=reg.color+"40";rel.style.background=reg.color+"18";
+  document.getElementById("popup-device").textContent=runner.device||"Unknown";
+  const t=getTier(avgScore(runner));
+  const tt=document.getElementById("popup-tier-tag");
+  tt.textContent=t.label+" Tier";tt.className="popup-tag tier-badge "+t.cls;
+  document.getElementById("popup-bounce").innerHTML=sv(runner.bounce||0);
+  document.getElementById("popup-cc").innerHTML=sv(runner.cc||0);
+  document.getElementById("popup-consistency").innerHTML=sv(runner.consistency||0);
+  document.getElementById("popup-cam").innerHTML=sv(runner.cam||0);
+  document.getElementById("popup-nobounce").innerHTML=sv(runner.nobounce||0);
+  document.getElementById("popup-overall").innerHTML=sv(calcOverall(runner),500);
+  document.getElementById("popup-roblox").href=`https://www.roblox.com/users/${runner.id}/profile`;
+  const yt=document.getElementById("popup-youtube");
+  yt.style.display=(runner.youtube&&runner.youtube.trim())?"flex":"none";
+  if(runner.youtube)yt.href=runner.youtube;
+  const img=document.getElementById("popup-avatar");img.src="";
+  if(avatarCache[runner.id]){img.src=avatarCache[runner.id];}
+  else{try{const res=await fetch(`https://thumbnails.roproxy.com/v1/users/avatar-headshot?userIds=${runner.id}&size=150x150&format=Png&isCircular=true`);const d=await res.json();if(d.data?.[0]){avatarCache[runner.id]=d.data[0].imageUrl;img.src=d.data[0].imageUrl;}}catch(e){}}
+  document.getElementById("player-overlay").classList.add("open");
+  document.body.style.overflow="hidden";
+}
+function closeOv(id){document.getElementById(id).classList.remove("open");document.body.style.overflow="";}
+async function loadAvatars(){
+  const items=Array.from(document.querySelectorAll(".player-item"));
+  const ids=items.filter(i=>!avatarCache[i.dataset.userid]).map(i=>i.dataset.userid).filter(Boolean);
+  items.forEach(i=>{const img=i.querySelector(".avatar");if(avatarCache[i.dataset.userid]){img.src=avatarCache[i.dataset.userid];img.style.opacity="1";}});
+  for(let i=0;i<ids.length;i+=100){
+    try{const res=await fetch(`https://thumbnails.roproxy.com/v1/users/avatar-headshot?userIds=${ids.slice(i,i+100).join(",")}&size=150x150&format=Png&isCircular=true`);const d=await res.json();d.data?.forEach(x=>{avatarCache[x.targetId]=x.imageUrl;const img=document.querySelector(`.player-item[data-userid="${x.targetId}"] .avatar`);if(img){img.src=x.imageUrl;img.style.opacity="1";}});if(i+100<ids.length)await new Promise(r=>setTimeout(r,300));}catch(e){}
+  }
+}
+async function init(){
+  try{
+    const res=await fetch("runners.json");
+    let runners=await res.json();
+    runners.forEach(r=>r._overall=(r.bounce||0)+(r.cc||0)+(r.consistency||0)+(r.cam||0)+(r.nobounce||0));
+    runners.sort((a,b)=>b._overall-a._overall);
+    runnersData=runners;totalPages=Math.ceil(runners.length/PER_PAGE);renderPage(1);
+    document.getElementById("search").addEventListener("keydown",e=>{
+      if(e.key!=="Enter")return;
+      const q=e.target.value.toLowerCase().trim();if(!q)return;
+      const m=runnersData.find(r=>r.name.toLowerCase().includes(q)||r.display.toLowerCase().includes(q));
+      if(m)openPopup(m);else document.getElementById("error-overlay").classList.add("open");
+    });
+  }catch(err){document.getElementById("speedrunnerList").innerHTML=`<li style="text-align:center;padding:40px;color:var(--muted)">Could not load runners.json</li>`;console.error(err);}
+}
+document.getElementById("popup-close").onclick=()=>closeOv("player-overlay");
+document.getElementById("error-close").onclick=()=>closeOv("error-overlay");
+document.getElementById("player-overlay").addEventListener("click",e=>{if(!e.target.closest(".popup"))closeOv("player-overlay");});
+document.getElementById("error-overlay").addEventListener("click",e=>{if(!e.target.closest(".error-box"))closeOv("error-overlay");});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeOv("player-overlay");closeOv("error-overlay");}});
+document.getElementById("prev").onclick=()=>{if(currentPage>1)renderPage(currentPage-1);};
+document.getElementById("next").onclick=()=>{if(currentPage<totalPages)renderPage(currentPage+1);};
+window.addEventListener("DOMContentLoaded",init);
+</script>
+</body>
+</html>
