@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TTTiers — Stat Rankings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#111827;--surface:#1a2332;--surface-alt:#1f2d3d;--card:#1e2a38;
+  --text:#e8f0fe;--muted:#7a9bbf;--border:rgba(120,160,220,0.12);--border-h:rgba(100,200,180,0.35);
+  --mint:#34d399;--mint-s:rgba(52,211,153,0.15);--mint-d:#10b981;
+  --purple:#a78bfa;--purple-s:rgba(167,139,250,0.15);
+  --gold:#fbbf24;--gold-s:rgba(251,191,36,0.18);
+  --silver:#94a3b8;--silver-s:rgba(148,163,184,0.18);
+  --bronze:#f97316;--bronze-s:rgba(249,115,22,0.18);
+  --tf-bg:rgba(239,68,68,.18);    --tf-c:#fca5a5;
+  --td-bg:rgba(249,115,22,.18);   --td-c:#fdba74;
+  --tc-bg:rgba(234,179,8,.18);    --tc-c:#fde047;
+  --tb-bg:rgba(59,130,246,.18);   --tb-c:#93c5fd;
+  --ta-bg:rgba(52,211,153,.18);   --ta-c:#6ee7b7;
+  --ts-bg:rgba(251,191,36,.22);   --ts-c:#fcd34d;
+  --tss-bg:rgba(167,139,250,.25); --tss-c:#c4b5fd;
+  --tz-bg:rgba(236,72,153,.28);   --tz-c:#f9a8d4;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 0%,rgba(52,211,153,.06),transparent 50%),radial-gradient(ellipse at 80% 0%,rgba(167,139,250,.06),transparent 50%);pointer-events:none;z-index:0;}
+.page{position:relative;z-index:1;max-width:1280px;margin:0 auto;padding:24px 20px 60px;}
+ 
+.topbar{display:flex;align-items:center;justify-content:space-between;padding-bottom:28px;flex-wrap:wrap;gap:12px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand-mark{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--mint),#059669);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#fff;}
+.brand-name{font-size:1.3rem;font-weight:800;letter-spacing:-.04em;}
+.nav-links{display:flex;gap:8px;flex-wrap:wrap;}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:.85rem;font-weight:700;padding:7px 14px;border-radius:99px;border:1px solid var(--border);transition:all .18s;}
+.nav-links a:hover,.nav-links a.active{color:var(--mint);border-color:var(--mint-s);background:var(--mint-s);}
+ 
+.hero{text-align:center;margin-bottom:28px;}
+.hero-badge{display:inline-flex;background:var(--purple-s);color:var(--purple);font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:5px 14px;border-radius:99px;border:1px solid rgba(167,139,250,.25);margin-bottom:12px;}
+.hero h1{font-size:clamp(1.9rem,4vw,3rem);font-weight:800;letter-spacing:-.04em;line-height:1.1;}
+.hero h1 em{font-style:normal;color:var(--purple);}
+.hero p{margin:10px auto 0;max-width:520px;color:var(--muted);font-size:.93rem;line-height:1.6;}
+ 
+.stat-tabs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:28px;}
+.stat-tab{display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:14px;border:1px solid var(--border);background:var(--surface);cursor:pointer;font-size:.88rem;font-weight:700;color:var(--muted);transition:all .2s;font-family:'Nunito',sans-serif;}
+.stat-tab:hover{border-color:var(--border-h);color:var(--text);}
+.stat-tab.active{color:#fff;}
+.tab-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;}
+ 
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;}
+.stat-col{background:var(--surface);border:1px solid var(--border);border-radius:20px;overflow:hidden;display:none;}
+.stat-col.visible{display:block;}
+.col-header{padding:14px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);}
+.col-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;}
+.col-title{font-size:1rem;font-weight:800;letter-spacing:-.02em;}
+.col-sub{font-size:.72rem;color:var(--muted);margin-top:1px;}
+.col-list{list-style:none;padding:8px;}
+.col-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;border:1px solid transparent;background:var(--card);margin-bottom:4px;cursor:pointer;transition:border-color .18s,background .18s;}
+.col-row:hover{border-color:var(--border-h);background:var(--surface-alt);}
+.col-rank{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;background:rgba(255,255,255,.05);color:var(--muted);flex-shrink:0;}
+.col-rank.rank-1{background:var(--gold-s);color:var(--gold);}
+.col-rank.rank-2{background:var(--silver-s);color:var(--silver);}
+.col-rank.rank-3{background:var(--bronze-s);color:var(--bronze);}
+.col-avatar{width:30px;height:30px;border-radius:50%;border:1px solid rgba(52,211,153,.25);background:var(--surface-alt);object-fit:cover;flex-shrink:0;opacity:0;transition:opacity .3s;}
+.col-info{flex:1;min-width:0;}
+.col-name{font-size:.82rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.col-display{font-size:.7rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.col-score{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0;}
+.score-num{font-family:'JetBrains Mono',monospace;font-size:.88rem;font-weight:700;}
+.tier-badge{display:inline-flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:800;padding:1px 6px;border-radius:5px;letter-spacing:.03em;}
+.tier-f  {background:var(--tf-bg); color:var(--tf-c);}
+.tier-d  {background:var(--td-bg); color:var(--td-c);}
+.tier-c  {background:var(--tc-bg); color:var(--tc-c);}
+.tier-b  {background:var(--tb-bg); color:var(--tb-c);}
+.tier-a  {background:var(--ta-bg); color:var(--ta-c);}
+.tier-s  {background:var(--ts-bg); color:var(--ts-c);}
+.tier-ss {background:var(--tss-bg);color:var(--tss-c);}
+.tier-z  {background:var(--tz-bg); color:var(--tz-c);}
+.score-bar-wrap{height:3px;background:rgba(255,255,255,.07);border-radius:99px;margin-top:4px;overflow:hidden;}
+.score-bar-fill{height:100%;border-radius:99px;transition:width .4s ease;}
+ 
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(6px);z-index:200;align-items:center;justify-content:center;padding:20px;}
+.overlay.open{display:flex;}
+.popup{background:var(--surface);border:1px solid var(--border);border-radius:26px;padding:26px 22px 22px;max-width:370px;width:100%;position:relative;animation:popIn .28s cubic-bezier(.34,1.56,.64,1);}
+@keyframes popIn{from{opacity:0;transform:scale(.88) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.popup-rank-badge{position:absolute;top:20px;left:20px;width:36px;height:36px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.82rem;background:rgba(255,255,255,.05);color:var(--muted);}
+.popup-rank-badge.rank-1{background:var(--gold-s);color:var(--gold);}
+.popup-rank-badge.rank-2{background:var(--silver-s);color:var(--silver);}
+.popup-rank-badge.rank-3{background:var(--bronze-s);color:var(--bronze);}
+.popup-header{text-align:center;margin-bottom:14px;}
+#popup-avatar{width:74px;height:74px;border-radius:50%;border:3px solid var(--mint);object-fit:cover;margin-bottom:9px;box-shadow:0 0 20px rgba(52,211,153,.2);}
+.popup-name{font-size:1.08rem;font-weight:800;letter-spacing:-.02em;}
+.popup-display-name{font-size:.8rem;color:var(--muted);margin-top:2px;}
+.popup-meta{display:flex;gap:6px;justify-content:center;margin-top:8px;flex-wrap:wrap;}
+.popup-tag{font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:99px;background:rgba(255,255,255,.06);color:var(--muted);border:1px solid var(--border);text-transform:uppercase;}
+.popup-stats{display:grid;gap:4px;margin-bottom:13px;}
+.stat-row{display:flex;justify-content:space-between;align-items:center;padding:8px 13px;border-radius:10px;background:var(--surface-alt);border:1px solid var(--border);}
+.stat-label{font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:700;}
+.stat-value{display:flex;align-items:baseline;gap:4px;font-family:'JetBrains Mono',monospace;font-size:.98rem;font-weight:500;}
+.stat-max-txt{font-size:.68rem;color:var(--muted);opacity:.5;}
+.stat-row.nb-row{border-color:rgba(167,139,250,.2);background:rgba(167,139,250,.06);}
+.stat-row.nb-row .stat-label{color:var(--purple);}
+.stat-row.ov-row{border-color:rgba(52,211,153,.25);background:rgba(52,211,153,.06);}
+.stat-row.ov-row .stat-label{color:var(--mint);}
+.stat-row.ov-row .stat-value{font-size:1.15rem;color:var(--mint);}
+.popup-links{display:flex;gap:8px;margin-bottom:11px;}
+.popup-link{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px;border-radius:12px;border:1px solid var(--border);background:var(--surface-alt);color:var(--muted);text-decoration:none;font-size:.82rem;font-weight:700;transition:all .18s;}
+.popup-link:hover{color:var(--mint);border-color:rgba(52,211,153,.35);background:var(--mint-s);}
+.popup-link img{width:15px;height:15px;border-radius:3px;object-fit:contain;}
+.popup-close{width:100%;padding:11px;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:12px;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:700;font-size:.88rem;transition:all .18s;}
+.popup-close:hover{background:var(--mint-s);color:var(--mint);border-color:rgba(52,211,153,.35);}
+ 
+@media(max-width:700px){
+  .stats-grid{grid-template-columns:1fr;}
+  .stat-tabs{gap:6px;}
+  .stat-tab{padding:8px 14px;font-size:.8rem;}
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">TT</div>
+      <div class="brand-name">TTTiers</div>
+    </div>
+    <nav class="nav-links">
+      <a href="index.html">Leaderboard</a>
+      <a href="stats.html" class="active">Stat Rankings</a>
+    </nav>
+  </header>
+ 
+  <section class="hero">
+    <div class="hero-badge">Individual Stat Rankings</div>
+    <h1>Who tops each <em>category?</em></h1>
+    <p>Every runner ranked 1–49 for each individual stat. Pick a tab or view all five side by side.</p>
+  </section>
+ 
+  <div class="stat-tabs" id="stat-tabs">
+    <button class="stat-tab active" data-stat="all" style="background:var(--mint-s);border-color:rgba(52,211,153,.35);color:var(--mint);">
+      <span class="tab-icon" style="background:rgba(255,255,255,.08);">🏆</span> All Stats
+    </button>
+    <button class="stat-tab" data-stat="bounce">
+      <span class="tab-icon" style="background:rgba(251,191,36,.15);color:#fbbf24;">B</span> Bounce
+    </button>
+    <button class="stat-tab" data-stat="cc">
+      <span class="tab-icon" style="background:rgba(96,165,250,.15);color:#60a5fa;">CC</span> Corner Cut
+    </button>
+    <button class="stat-tab" data-stat="consistency">
+      <span class="tab-icon" style="background:rgba(52,211,153,.15);color:#34d399;">C</span> Consistency
+    </button>
+    <button class="stat-tab" data-stat="cam">
+      <span class="tab-icon" style="background:rgba(249,115,22,.15);color:#f97316;">CM</span> Cam Control
+    </button>
+    <button class="stat-tab" data-stat="nobounce">
+      <span class="tab-icon" style="background:rgba(167,139,250,.15);color:#a78bfa;">NB</span> No Bounce
+    </button>
+  </div>
+ 
+  <div class="stats-grid" id="stats-grid"></div>
+</div>
+ 
+<div id="player-overlay" class="overlay">
+  <div class="popup">
+    <div id="popup-rank-badge" class="popup-rank-badge"></div>
+    <div class="popup-header">
+      <img id="popup-avatar" src="" alt="Player avatar">
+      <div class="popup-name" id="popup-main-name"></div>
+      <div class="popup-display-name" id="popup-display-name"></div>
+      <div class="popup-meta">
+        <span class="popup-tag" id="popup-region"></span>
+        <span class="popup-tag" id="popup-device"></span>
+      </div>
+    </div>
+    <div class="popup-links">
+      <a id="popup-roblox" href="#" target="_blank" class="popup-link">
+        <img src="roblox.png" alt="" onerror="this.style.display='none'"> Roblox
+      </a>
+      <a id="popup-youtube" href="#" target="_blank" class="popup-link" style="display:none">
+        <img src="youtube.png" alt="" onerror="this.style.display='none'"> YouTube
+      </a>
+    </div>
+    <div class="popup-stats">
+      <div class="stat-row"><span class="stat-label">Bounce</span><span class="stat-value" id="popup-bounce"></span></div>
+      <div class="stat-row"><span class="stat-label">Corner Cutting</span><span class="stat-value" id="popup-cc"></span></div>
+      <div class="stat-row"><span class="stat-label">Consistency</span><span class="stat-value" id="popup-consistency"></span></div>
+      <div class="stat-row"><span class="stat-label">Camera Control</span><span class="stat-value" id="popup-cam"></span></div>
+      <div class="stat-row nb-row"><span class="stat-label">No Bounce</span><span class="stat-value" id="popup-nobounce"></span></div>
+      <div class="stat-row ov-row"><span class="stat-label">Overall</span><span class="stat-value" id="popup-overall"></span></div>
+    </div>
+    <button class="popup-close" id="popup-close">Close</button>
+  </div>
+</div>
+ 
+<script>
+const REGION_MAP={NA:{name:"North America",color:"#60a5fa"},EU:{name:"Europe",color:"#34d399"},OC:{name:"Oceania",color:"#fbbf24"},AS:{name:"Asia",color:"#f87171"},SA:{name:"South America",color:"#a78bfa"},"N/A":{name:"Unknown",color:"#64748b"}};
+const TIERS=[
+  {min:0,  max:19,  cls:"tier-f",  label:"F"},
+  {min:20, max:39,  cls:"tier-d",  label:"D"},
+  {min:40, max:59,  cls:"tier-c",  label:"C"},
+  {min:60, max:74,  cls:"tier-b",  label:"B"},
+  {min:75, max:89,  cls:"tier-a",  label:"A"},
+  {min:90, max:94,  cls:"tier-s",  label:"S"},
+  {min:95, max:99,  cls:"tier-ss", label:"SS"},
+  {min:100,max:100, cls:"tier-z",  label:"Z"},
+];
+function getTier(v){return TIERS.find(t=>v>=t.min&&v<=t.max)||TIERS[0];}
+function getRegion(c){return REGION_MAP[(c||"").toUpperCase()]||REGION_MAP["N/A"];}
+function calcOverall(r){return(r.bounce||0)+(r.cc||0)+(r.consistency||0)+(r.cam||0)+(r.nobounce||0);}
+function sv(v,max=100){return `${v} <span class="stat-max-txt">/ ${max}</span>`;}
+ 
+const STAT_DEFS=[
+  {key:"bounce",     label:"Bounce",      sub:"Ball control & bounce skill",   color:"#fbbf24",icon:"B"},
+  {key:"cc",         label:"Corner Cut",  sub:"Precision cutting technique",   color:"#60a5fa",icon:"CC"},
+  {key:"consistency",label:"Consistency", sub:"Reliability across runs",       color:"#34d399",icon:"C"},
+  {key:"cam",        label:"Cam Control", sub:"Camera movement mastery",       color:"#f97316",icon:"CM"},
+  {key:"nobounce",   label:"No Bounce",   sub:"Performance without bounce",    color:"#a78bfa",icon:"NB"},
+];
+ 
+let allRunners=[];
+const avatarCache={};
+ 
+function buildColumns(runners){
+  const grid=document.getElementById("stats-grid");
+  grid.innerHTML="";
+  STAT_DEFS.forEach(def=>{
+    const sorted=[...runners].sort((a,b)=>(b[def.key]||0)-(a[def.key]||0));
+    const col=document.createElement("div");
+    col.className="stat-col visible";col.dataset.stat=def.key;
+    const iconBg=def.color+"26";
+    col.innerHTML=`
+      <div class="col-header">
+        <div class="col-icon" style="background:${iconBg};color:${def.color}">${def.icon}</div>
+        <div><div class="col-title" style="color:${def.color}">${def.label}</div><div class="col-sub">${def.sub}</div></div>
+      </div>
+      <ul class="col-list" id="col-${def.key}">
+        ${sorted.map((r,i)=>{
+          const rank=i+1,val=r[def.key]||0,t=getTier(val),pct=val;
+          const rc=rank===1?"rank-1":rank===2?"rank-2":rank===3?"rank-3":"";
+          return `<li class="col-row" data-userid="${r.id}" data-stat="${def.key}">
+            <div class="col-rank ${rc}">${rank}</div>
+            <img class="col-avatar" loading="lazy" src="" alt="${r.name}" data-uid="${r.id}">
+            <div class="col-info">
+              <div class="col-name">@${r.name}</div>
+              <div class="col-display">(${r.display})</div>
+            </div>
+            <div class="col-score">
+              <span class="score-num" style="color:${def.color}">${val}</span>
+              <span class="tier-badge ${t.cls}">${t.label}</span>
+            </div>
+          </li>
+          <div style="padding:0 10px 4px"><div class="score-bar-wrap"><div class="score-bar-fill" style="width:${pct}%;background:${def.color}40"></div></div></div>`;
+        }).join("")}
+      </ul>`;
+    grid.appendChild(col);
+  });
+  document.querySelectorAll(".col-row").forEach(row=>{
+    row.onclick=()=>{const r=allRunners.find(x=>x.id==row.dataset.userid);if(r)openPopup(r,row.dataset.stat);};
+  });
+  loadColAvatars();
+}
+ 
+function filterColumns(stat){
+  document.querySelectorAll(".stat-col").forEach(c=>c.classList.toggle("visible",stat==="all"||c.dataset.stat===stat));
+  document.querySelectorAll(".stat-tab").forEach(tab=>{
+    const active=tab.dataset.stat===stat;
+    tab.classList.toggle("active",active);
+    tab.style.background=active?"var(--mint-s)":"";
+    tab.style.borderColor=active?"rgba(52,211,153,.35)":"";
+    tab.style.color=active?"var(--mint)":"";
+  });
+}
+ 
+async function openPopup(runner,highlightStat){
+  const sorted=[...allRunners].sort((a,b)=>calcOverall(b)-calcOverall(a));
+  const rank=sorted.findIndex(r=>r.id==runner.id)+1;
+  const rb=document.getElementById("popup-rank-badge");
+  rb.textContent="#"+rank;rb.className="popup-rank-badge"+(rank<=3?" rank-"+rank:"");
+  document.getElementById("popup-main-name").textContent="@"+runner.name;
+  document.getElementById("popup-display-name").textContent="("+runner.display+")";
+  const reg=getRegion(runner.region);
+  const rel=document.getElementById("popup-region");
+  rel.textContent=reg.name;rel.style.color=reg.color;rel.style.borderColor=reg.color+"40";rel.style.background=reg.color+"18";
+  document.getElementById("popup-device").textContent=runner.device||"Unknown";
+  document.getElementById("popup-bounce").innerHTML=sv(runner.bounce||0);
+  document.getElementById("popup-cc").innerHTML=sv(runner.cc||0);
+  document.getElementById("popup-consistency").innerHTML=sv(runner.consistency||0);
+  document.getElementById("popup-cam").innerHTML=sv(runner.cam||0);
+  document.getElementById("popup-nobounce").innerHTML=sv(runner.nobounce||0);
+  document.getElementById("popup-overall").innerHTML=sv(calcOverall(runner),500);
+  document.getElementById("popup-roblox").href=`https://www.roblox.com/users/${runner.id}/profile`;
+  const yt=document.getElementById("popup-youtube");
+  yt.style.display=(runner.youtube&&runner.youtube.trim())?"flex":"none";
+  if(runner.youtube)yt.href=runner.youtube;
+  document.querySelectorAll(".stat-row").forEach(r=>r.style.outline="");
+  if(highlightStat){
+    const lmap={bounce:"Bounce",cc:"Corner Cutting",consistency:"Consistency",cam:"Camera Control",nobounce:"No Bounce"};
+    document.querySelectorAll(".stat-row .stat-label").forEach(el=>{if(el.textContent===lmap[highlightStat])el.closest(".stat-row").style.outline="1px solid var(--mint)";});
+  }
+  const img=document.getElementById("popup-avatar");img.src="";
+  if(avatarCache[runner.id]){img.src=avatarCache[runner.id];}
+  else{try{const res=await fetch(`https://thumbnails.roproxy.com/v1/users/avatar-headshot?userIds=${runner.id}&size=150x150&format=Png&isCircular=true`);const d=await res.json();if(d.data?.[0]){avatarCache[runner.id]=d.data[0].imageUrl;img.src=d.data[0].imageUrl;}}catch(e){}}
+  document.getElementById("player-overlay").classList.add("open");
+  document.body.style.overflow="hidden";
+}
+ 
+function closeOv(){document.getElementById("player-overlay").classList.remove("open");document.body.style.overflow="";}
+ 
+async function loadColAvatars(){
+  const imgs=Array.from(document.querySelectorAll(".col-avatar"));
+  const ids=[...new Set(imgs.map(i=>i.dataset.uid).filter(Boolean))];
+  imgs.forEach(i=>{if(avatarCache[i.dataset.uid]){i.src=avatarCache[i.dataset.uid];i.style.opacity="1";}});
+  for(let i=0;i<ids.length;i+=100){
+    try{
+      const res=await fetch(`https://thumbnails.roproxy.com/v1/users/avatar-headshot?userIds=${ids.slice(i,i+100).join(",")}&size=150x150&format=Png&isCircular=true`);
+      const d=await res.json();
+      d.data?.forEach(x=>{avatarCache[x.targetId]=x.imageUrl;document.querySelectorAll(`.col-avatar[data-uid="${x.targetId}"]`).forEach(img=>{img.src=x.imageUrl;img.style.opacity="1";});});
+      if(i+100<ids.length)await new Promise(r=>setTimeout(r,300));
+    }catch(e){}
+  }
+}
+ 
+async function init(){
+  try{
+    const res=await fetch("runners.json");
+    allRunners=await res.json();
+    buildColumns(allRunners);
+  }catch(err){document.getElementById("stats-grid").innerHTML=`<p style="text-align:center;color:var(--muted);padding:40px">Could not load runners.json</p>`;}
+}
+ 
+document.getElementById("stat-tabs").addEventListener("click",e=>{const tab=e.target.closest(".stat-tab");if(tab)filterColumns(tab.dataset.stat);});
+document.getElementById("popup-close").onclick=closeOv;
+document.getElementById("player-overlay").addEventListener("click",e=>{if(!e.target.closest(".popup"))closeOv();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeOv();});
+window.addEventListener("DOMContentLoaded",init);
+</script>
+</body>
+</html>
