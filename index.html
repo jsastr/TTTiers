@@ -416,12 +416,6 @@ body::before{
           <svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
           Leaderboard
         </a>
-        <a href="stats.html" class="nav-link">
-  <svg viewBox="0 0 24 24">
-    <path d="M5 9h3v10H5V9zm5-4h3v14h-3V5zm5 8h3v6h-3v-6z"/>
-  </svg>
-  Stats
-</a>
       </nav>
     </div>
   </div>
@@ -501,7 +495,7 @@ body::before{
         <div class="mode-option-text"><strong>Mobile Only</strong><span>Touchscreen players only</span></div>
       </button>
       <div class="mode-divider"></div>
-   <button class="mode-option" onclick="goToStats()">
+<button class="mode-option" data-action="stats">
         <div class="mode-option-icon" style="background:rgba(251,191,36,.12);">📊</div>
         <div class="mode-option-text"><strong>Stat Rankings</strong><span>Top players per individual stat</span></div>
       </button>
@@ -705,16 +699,18 @@ document.getElementById("error-close").onclick=()=>closeOv("error-overlay");
 document.getElementById("player-overlay").addEventListener("click",e=>{if(!e.target.closest(".popup"))closeOv("player-overlay");});
 document.getElementById("error-overlay").addEventListener("click",e=>{if(!e.target.closest(".error-box"))closeOv("error-overlay");});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeOv("player-overlay");closeOv("error-overlay");closeOv("mode-overlay");}});
+  const statsBtn = document.querySelector('.mode-option[data-action="stats"]');
+if (statsBtn) {
+  statsBtn.onclick = () => {
+    closeOv("mode-overlay");
+    setTimeout(() => {
+      window.location.href = "stats.html";
+    }, 150);
+  };
+}
 document.getElementById("prev").onclick=()=>{if(currentPage>1)renderPage(currentPage-1);};
 document.getElementById("next").onclick=()=>{if(currentPage<totalPages)renderPage(currentPage+1);};
 
-  function goToStats(){
-  closeOv("mode-overlay"); // closes popup
-  setTimeout(()=>{
-    window.location.href = "stats.html";
-  },150);
-}
-  
 async function init(){
   try{
     const res=await fetch("runners.json");
