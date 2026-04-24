@@ -682,7 +682,8 @@ else if (mode === "mobile") {
   text.textContent = "Mobile Players Only";
 }
 else {
-  icon.innerHTML = "";
+icon.innerHTML = "";
+icon.style.display = "none";
   text.textContent = "Top 50 Community Rankings";
 }
   renderPage(1);
