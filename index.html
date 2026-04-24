@@ -679,17 +679,20 @@ const icon = document.getElementById("hero-badge-icon");
 if (mode === "pc") {
   icon.innerHTML = deviceSVG("pc");
   text.textContent = "PC Players Only";
+  icon.style.display = "inline-flex";
+document.getElementById("hero-badge").classList.remove("no-icon");
 }
 else if (mode === "mobile") {
   icon.innerHTML = deviceSVG("mobile");
   text.textContent = "Mobile Players Only";
+  icon.style.display = "inline-flex";
+document.getElementById("hero-badge").classList.remove("no-icon");
 }
 else {
-icon.innerHTML = "";
-icon.style.display = "none";
-document.getElementById("hero-badge").classList.add("no-icon");
-
-text.textContent = "Top 50 Community Rankings";
+  icon.innerHTML = "";
+  icon.style.display = "inline-flex";
+  document.getElementById("hero-badge").classList.remove("no-icon");
+  text.textContent = "Top 50 Community Rankings";
 }
   renderPage(1);
 }
