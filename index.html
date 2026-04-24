@@ -136,18 +136,26 @@ body::before{
 
   margin-bottom:14px;
 }
+  .hero-eyebrow{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
 
-.hero-eyebrow span:first-child{
-  width:6px;
-  height:6px;
-  border-radius:50%;
-  background:var(--mint);
+  font-size:.72rem;
+  font-weight:900;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+
+  padding:6px 14px;
+  border-radius:999px;
+
+  background:rgba(45,212,160,.12);
+  border:1px solid rgba(45,212,160,.35);
+  color:var(--mint);
+
+  margin-bottom:14px;
   box-shadow:0 0 10px rgba(45,212,160,.6);
 }
-  rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
-  padding:5px 16px;border-radius:6px;border:1px solid rgba(45,212,160,.2);margin-bottom:14px;
-}
-.hero-eyebrow span{width:5px;height:5px;border-radius:50%;background:var(--mint);animation:pulse 2s infinite;}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 .hero h1{
   font-family:'Rajdhani',sans-serif;
@@ -442,7 +450,10 @@ body::before{
 <div class="page">
   <!-- ── HERO ── -->
   <section class="hero">
-    <div class="hero-eyebrow"><span></span> <span id="hero-badge-text">Top 50 Community Rankings</span></div>
+  <div class="hero-eyebrow" id="hero-badge">
+  <span class="badge-icon"></span>
+  <span id="hero-badge-text">Top 50 Community Rankings</span>
+</div>
     <h1>Roblox <em>Speedrunners</em></h1>
     <p class="hero-sub">Ranked by Bounce, No Bounce, Consistency &amp; Camera Control.</p>
   </section>
