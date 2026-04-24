@@ -209,7 +209,11 @@ body::before{
 .lb-header div{display:flex;align-items:center;}
 .lb-header div:not(:nth-child(2)){justify-content:center;}
  
-.player-list{list-style:none;padding:0;}
+.player-list{
+  list-style:none;
+  padding:0;
+  margin:0;
+}
  
 /* Each row is tall enough that ~6 fit in viewport before scrolling */
 .player-item{
@@ -294,7 +298,14 @@ body::before{
 .overall-tier-cell{display:flex;align-items:center;justify-content:center;}
 .big-tier{font-size:.72rem;padding:4px 10px;}
  
-.device-icon{width:13px;height:13px;fill:var(--muted);opacity:.4;vertical-align:middle;}
+.device-icon{
+  width:13px;
+  height:13px;
+  fill:currentColor;
+  opacity:1;
+  margin-right:4px;
+  vertical-align:middle;
+}
  
 /* skeleton */
 .skeleton-row{height:90px;background:linear-gradient(90deg,var(--surface-alt) 25%,var(--card) 50%,var(--surface-alt) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-bottom:1px solid rgba(255,255,255,.04);}
