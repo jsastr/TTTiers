@@ -501,7 +501,7 @@ body::before{
         <div class="mode-option-text"><strong>Mobile Only</strong><span>Touchscreen players only</span></div>
       </button>
       <div class="mode-divider"></div>
-      <button class="mode-option" data-mode="stats" onclick="window.location.href='stats.html'">
+   <button class="mode-option" onclick="goToStats()">
         <div class="mode-option-icon" style="background:rgba(251,191,36,.12);">📊</div>
         <div class="mode-option-text"><strong>Stat Rankings</strong><span>Top players per individual stat</span></div>
       </button>
@@ -707,7 +707,14 @@ document.getElementById("error-overlay").addEventListener("click",e=>{if(!e.targ
 document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeOv("player-overlay");closeOv("error-overlay");closeOv("mode-overlay");}});
 document.getElementById("prev").onclick=()=>{if(currentPage>1)renderPage(currentPage-1);};
 document.getElementById("next").onclick=()=>{if(currentPage<totalPages)renderPage(currentPage+1);};
- 
+
+  function goToStats(){
+  closeOv("mode-overlay"); // closes popup
+  setTimeout(()=>{
+    window.location.href = "stats.html";
+  },150);
+}
+  
 async function init(){
   try{
     const res=await fetch("runners.json");
