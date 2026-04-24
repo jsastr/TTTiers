@@ -692,22 +692,28 @@ document.querySelectorAll(".mode-option[data-mode]").forEach(btn=>{
     this.classList.add("selected");
   };
 });
-document.getElementById("mode-apply").onclick=()=>{closeOv("mode-overlay");applyMode(pendingMode);};
+document.getElementById("mode-apply").onclick = () => {
+  closeOv("mode-overlay");
+
+  if (pendingMode === "stats") {
+    window.location.href = "stats.html";
+    return;
+  }
+
+  applyMode(pendingMode);
+};
 document.getElementById("mode-overlay").addEventListener("click",e=>{if(!e.target.closest(".mode-popup"))closeOv("mode-overlay");});
 document.getElementById("popup-close").onclick=()=>closeOv("player-overlay");
 document.getElementById("error-close").onclick=()=>closeOv("error-overlay");
 document.getElementById("player-overlay").addEventListener("click",e=>{if(!e.target.closest(".popup"))closeOv("player-overlay");});
 document.getElementById("error-overlay").addEventListener("click",e=>{if(!e.target.closest(".error-box"))closeOv("error-overlay");});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeOv("player-overlay");closeOv("error-overlay");closeOv("mode-overlay");}});
-  const statsBtn = document.querySelector('.mode-option[data-action="stats"]');
-if (statsBtn) {
-  statsBtn.onclick = () => {
-    closeOv("mode-overlay");
-    setTimeout(() => {
-      window.location.href = "stats.html";
-    }, 150);
-  };
-}
+  document.querySelector('.mode-option[data-action="stats"]').onclick = function () {
+  pendingMode = "stats";
+
+  document.querySelectorAll(".mode-option").forEach(o => o.classList.remove("selected"));
+  this.classList.add("selected");
+};
 document.getElementById("prev").onclick=()=>{if(currentPage>1)renderPage(currentPage-1);};
 document.getElementById("next").onclick=()=>{if(currentPage<totalPages)renderPage(currentPage+1);};
 
