@@ -400,9 +400,9 @@
     "name": "preyforpreyforsteven",
     "display": "Obby",
     "bounce": 83,
-    "consistency": 80,
+    "consistency": 83,
     "cam": 85,
-    "nobounce": 79,
+    "nobounce": 80,
     "device": "Mobile",
     "youtube": "https://www.youtube.com/@preyforpreyforsteven508",
     "region": "N/A"
