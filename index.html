@@ -120,13 +120,31 @@ body::before{
 .hero-eyebrow{
   display:inline-flex;
   align-items:center;
-  gap:6px;
-  white-space:nowrap;      /* 🔑 prevents vertical stacking */
-  font-size:.6rem;         /* slightly smaller */
+  gap:8px;
+
+  font-size:.72rem;
+  font-weight:900;
   letter-spacing:.12em;
+  text-transform:uppercase;
+
+  padding:6px 14px;
+  border-radius:999px;
+
+  background:rgba(45,212,160,.12);
+  border:1px solid rgba(45,212,160,.35);
+  color:var(--mint);
+
+  margin-bottom:14px;
 }
-  background:rgba(45,212,160,.1);color:var(--mint);
-  font-size:.68rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+
+.hero-eyebrow span:first-child{
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:var(--mint);
+  box-shadow:0 0 10px rgba(45,212,160,.6);
+}
+  rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
   padding:5px 16px;border-radius:6px;border:1px solid rgba(45,212,160,.2);margin-bottom:14px;
 }
 .hero-eyebrow span{width:5px;height:5px;border-radius:50%;background:var(--mint);animation:pulse 2s infinite;}
