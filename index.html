@@ -117,6 +117,19 @@ body::before{
   text-align:center;padding:36px 24px 28px;
   background:linear-gradient(180deg,rgba(45,212,160,.04) 0%,transparent 100%);
 }
+  .hero-eyebrow{
+  display:flex;
+  align-items:center;
+}
+  
+.hero-badge-icon{
+  width:16px;
+  height:16px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  margin-right:6px;
+}
 .hero-eyebrow{
   display:inline-flex;
   align-items:center;
@@ -462,7 +475,7 @@ body::before{
   <!-- ── HERO ── -->
   <section class="hero">
   <div class="hero-eyebrow" id="hero-badge">
-  <span class="badge-icon"></span>
+<span class="hero-badge-icon" id="hero-badge-icon"></span>
   <span id="hero-badge-text">Top 50 Community Rankings</span>
 </div>
     <h1>Roblox <em>Speedrunners</em></h1>
@@ -668,8 +681,21 @@ function applyMode(mode){
   totalPages=Math.max(1,Math.ceil(runnersData.length/PER_PAGE));
   const labels={all:"All Players",pc:"PC Only",mobile:"Mobile Only"};
   document.getElementById("mode-label-text").textContent=labels[mode]||"All Players";
-  const b=document.getElementById("hero-badge-text");
-  b.textContent=mode==="pc"?"PC Players Only":mode==="mobile"?"Mobile Players Only":"Top 50 Community Rankings";
+const text = document.getElementById("hero-badge-text");
+const icon = document.getElementById("hero-badge-icon");
+
+if (mode === "pc") {
+  icon.innerHTML = "🖥️";
+  text.textContent = "PC Players Only";
+}
+else if (mode === "mobile") {
+  icon.innerHTML = "📱";
+  text.textContent = "Mobile Players Only";
+}
+else {
+  icon.innerHTML = "";
+  text.textContent = "Top 50 Community Rankings";
+}
   renderPage(1);
 }
  
