@@ -125,11 +125,11 @@ body::before{
   justify-content:center;
   margin-right:6px;
 }
-  .hero-eyebrow.no-icon {
+.hero-eyebrow.no-icon {
   gap: 0;
 }
-  .hero-eyebrow:has(#hero-badge-icon:empty){
-  gap:0;
+.hero-eyebrow.no-icon .hero-badge-icon {
+  display: none;
 }
  .hero-eyebrow{
   display:inline-flex;
@@ -690,8 +690,8 @@ document.getElementById("hero-badge").classList.remove("no-icon");
 }
 else {
   icon.innerHTML = "";
-  icon.style.display = "inline-flex";
-  document.getElementById("hero-badge").classList.remove("no-icon");
+  icon.style.display = "none";
+  document.getElementById("hero-badge").classList.add("no-icon");
   text.textContent = "Top 50 Community Rankings";
 }
   renderPage(1);
