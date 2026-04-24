@@ -118,7 +118,13 @@ body::before{
   background:linear-gradient(180deg,rgba(45,212,160,.04) 0%,transparent 100%);
 }
 .hero-eyebrow{
-  display:inline-flex;align-items:center;gap:8px;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  white-space:nowrap;      /* 🔑 prevents vertical stacking */
+  font-size:.6rem;         /* slightly smaller */
+  letter-spacing:.12em;
+}
   background:rgba(45,212,160,.1);color:var(--mint);
   font-size:.68rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
   padding:5px 16px;border-radius:6px;border:1px solid rgba(45,212,160,.2);margin-bottom:14px;
