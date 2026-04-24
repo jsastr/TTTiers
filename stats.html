@@ -136,7 +136,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   <section class="hero">
     <div class="hero-badge">Individual Stat Rankings</div>
     <h1>Who tops each <em>category?</em></h1>
-    <p>Every runner ranked 1–49 for each individual stat. Pick a tab or view all five side by side.</p>
+    <p>Every runner ranked for each individual stat. Pick a tab or view all four side by side.</p>
   </section>
  
   <div class="stat-tabs" id="stat-tabs">
@@ -145,9 +145,6 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     </button>
     <button class="stat-tab" data-stat="bounce">
       <span class="tab-icon" style="background:rgba(251,191,36,.15);color:#fbbf24;">B</span> Bounce
-    </button>
-    <button class="stat-tab" data-stat="cc">
-      <span class="tab-icon" style="background:rgba(96,165,250,.15);color:#60a5fa;">CC</span> Corner Cut
     </button>
     <button class="stat-tab" data-stat="consistency">
       <span class="tab-icon" style="background:rgba(52,211,153,.15);color:#34d399;">C</span> Consistency
@@ -185,7 +182,6 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     </div>
     <div class="popup-stats">
       <div class="stat-row"><span class="stat-label">Bounce</span><span class="stat-value" id="popup-bounce"></span></div>
-      <div class="stat-row"><span class="stat-label">Corner Cutting</span><span class="stat-value" id="popup-cc"></span></div>
       <div class="stat-row"><span class="stat-label">Consistency</span><span class="stat-value" id="popup-consistency"></span></div>
       <div class="stat-row"><span class="stat-label">Camera Control</span><span class="stat-value" id="popup-cam"></span></div>
       <div class="stat-row nb-row"><span class="stat-label">No Bounce</span><span class="stat-value" id="popup-nobounce"></span></div>
@@ -209,12 +205,11 @@ const TIERS=[
 ];
 function getTier(v){return TIERS.find(t=>v>=t.min&&v<=t.max)||TIERS[0];}
 function getRegion(c){return REGION_MAP[(c||"").toUpperCase()]||REGION_MAP["N/A"];}
-function calcOverall(r){return(r.bounce||0)+(r.cc||0)+(r.consistency||0)+(r.cam||0)+(r.nobounce||0);}
+function calcOverall(r){return(r.bounce||0)+(r.consistency||0)+(r.cam||0)+(r.nobounce||0);}
 function sv(v,max=100){return `${v} <span class="stat-max-txt">/ ${max}</span>`;}
  
 const STAT_DEFS=[
   {key:"bounce",     label:"Bounce",      sub:"Ball control & bounce skill",   color:"#fbbf24",icon:"B"},
-  {key:"cc",         label:"Corner Cut",  sub:"Precision cutting technique",   color:"#60a5fa",icon:"CC"},
   {key:"consistency",label:"Consistency", sub:"Reliability across runs",       color:"#34d399",icon:"C"},
   {key:"cam",        label:"Cam Control", sub:"Camera movement mastery",       color:"#f97316",icon:"CM"},
   {key:"nobounce",   label:"No Bounce",   sub:"Performance without bounce",    color:"#a78bfa",icon:"NB"},
@@ -286,18 +281,17 @@ async function openPopup(runner,highlightStat){
   rel.textContent=reg.name;rel.style.color=reg.color;rel.style.borderColor=reg.color+"40";rel.style.background=reg.color+"18";
   document.getElementById("popup-device").textContent=runner.device||"Unknown";
   document.getElementById("popup-bounce").innerHTML=sv(runner.bounce||0);
-  document.getElementById("popup-cc").innerHTML=sv(runner.cc||0);
   document.getElementById("popup-consistency").innerHTML=sv(runner.consistency||0);
   document.getElementById("popup-cam").innerHTML=sv(runner.cam||0);
   document.getElementById("popup-nobounce").innerHTML=sv(runner.nobounce||0);
-  document.getElementById("popup-overall").innerHTML=sv(calcOverall(runner),500);
+  document.getElementById("popup-overall").innerHTML=sv(calcOverall(runner),400);
   document.getElementById("popup-roblox").href=`https://www.roblox.com/users/${runner.id}/profile`;
   const yt=document.getElementById("popup-youtube");
   yt.style.display=(runner.youtube&&runner.youtube.trim())?"flex":"none";
   if(runner.youtube)yt.href=runner.youtube;
   document.querySelectorAll(".stat-row").forEach(r=>r.style.outline="");
   if(highlightStat){
-    const lmap={bounce:"Bounce",cc:"Corner Cutting",consistency:"Consistency",cam:"Camera Control",nobounce:"No Bounce"};
+    const lmap={bounce:"Bounce",consistency:"Consistency",cam:"Camera Control",nobounce:"No Bounce"};
     document.querySelectorAll(".stat-row .stat-label").forEach(el=>{if(el.textContent===lmap[highlightStat])el.closest(".stat-row").style.outline="1px solid var(--mint)";});
   }
   const img=document.getElementById("popup-avatar");img.src="";
