@@ -143,6 +143,18 @@
     "youtube": "https://www.youtube.com/channel/UCqCbeeZqTYNG2W8qyh5pS8w",
     "region": "N/A"
   },
+   {
+    "id": "222605413",
+    "name": "ILLUMlNIZE",
+    "display": "Egg1",
+    "bounce": 91,
+    "consistency": 79,
+    "cam": 93,
+    "nobounce": 100,
+    "device": "PC",
+    "youtube": "https://www.youtube.com/@Illuminize",
+    "region": "NA"
+  },
   {
     "id": "1032501019",
     "name": "mlg_gamertweet",
@@ -167,17 +179,17 @@
     "youtube": "https://www.youtube.com/@1mlwys",
     "region": "EU"
   },
-  {
-    "id": "222605413",
-    "name": "ILLUMlNIZE",
-    "display": "Egg1",
-    "bounce": 88,
-    "consistency": 79,
-    "cam": 93,
-    "nobounce": 100,
+   {
+    "id": "7176226681",
+    "name": "lIikerobloxcool",
+    "display": "TotXD",
+    "bounce": 96,
+    "consistency": 82,
+    "cam": 87,
+    "nobounce": 94,
     "device": "PC",
-    "youtube": "https://www.youtube.com/@Illuminize",
-    "region": "NA"
+    "youtube": "https://www.youtube.com/@TotXDD",
+    "region": "EU"
   },
   {
     "id": "1381674013",
@@ -201,18 +213,6 @@
     "nobounce": 88,
     "device": "PC",
     "youtube": "https://www.youtube.com/@vaedsi",
-    "region": "EU"
-  },
-  {
-    "id": "7176226681",
-    "name": "lIikerobloxcool",
-    "display": "TotXD",
-    "bounce": 96,
-    "consistency": 84,
-    "cam": 87,
-    "nobounce": 87,
-    "device": "PC",
-    "youtube": "https://www.youtube.com/@TotXDD",
     "region": "EU"
   },
   {
