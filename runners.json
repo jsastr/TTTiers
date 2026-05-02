@@ -468,18 +468,6 @@
     "region": "EU"
   },
   {
-    "id": "7085853583",
-    "name": "iamwhoiam_g",
-    "display": "iam",
-    "bounce": 81,
-    "consistency": 71,
-    "cam": 84,
-    "nobounce": 90,
-    "device": "PC",
-    "youtube": "https://www.youtube.com/@iamwhoiam_g",
-    "region": "EU"
-  },
-  {
     "id": "3926890294",
     "name": "q0vick",
     "display": "j3str",
@@ -489,6 +477,18 @@
     "nobounce": 83,
     "device": "PC",
     "youtube": "https://www.youtube.com/@q0vick",
+    "region": "EU"
+  },
+  {
+    "id": "7085853583",
+    "name": "iamwhoiam_g",
+    "display": "iam",
+    "bounce": 81,
+    "consistency": 71,
+    "cam": 84,
+    "nobounce": 90,
+    "device": "PC",
+    "youtube": "https://www.youtube.com/@iamwhoiam_g",
     "region": "EU"
   },
   {
