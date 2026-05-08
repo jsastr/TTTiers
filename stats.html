@@ -611,13 +611,28 @@ document.querySelectorAll(".mode-option").forEach(btn=>{
     this.classList.add("selected");
   };
 });
-document.getElementById("mode-apply").onclick=()=>{
+document.getElementById("mode-apply").onclick = () => {
   closeOv("mode-overlay");
-  if(pendingMode==="stats"){return;} // already here
-  // navigate back to index with mode
-  if(pendingMode==="all")window.location.href="index.html";
-  else if(pendingMode==="pc")window.location.href="index.html?mode=pc";
-  else if(pendingMode==="mobile")window.location.href="index.html?mode=mobile";
+
+  const modeLabel = document.getElementById("mode-label-text");
+
+  if (pendingMode === "stats") {
+    modeLabel.textContent = "Stat Rankings";
+    return;
+  }
+
+  if (pendingMode === "all") {
+    modeLabel.textContent = "All Players";
+    window.location.href = "index.html";
+  }
+  else if (pendingMode === "pc") {
+    modeLabel.textContent = "PC Only";
+    window.location.href = "index.html?mode=pc";
+  }
+  else if (pendingMode === "mobile") {
+    modeLabel.textContent = "Mobile Only";
+    window.location.href = "index.html?mode=mobile";
+  }
 };
 document.getElementById("mode-overlay").addEventListener("click",e=>{if(!e.target.closest(".mode-popup"))closeOv("mode-overlay");});
 document.getElementById("popup-close").onclick=()=>closeOv("player-overlay");
