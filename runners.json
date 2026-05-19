@@ -1169,7 +1169,7 @@
     "display": "ardei",
     "bounce": 100,
     "nobounce": 100,
-    "consistency": 100,
+    "consistency": 99,
     "cam": 100,
     "device": "PC",
     "youtube": "",
