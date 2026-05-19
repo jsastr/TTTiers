@@ -1063,7 +1063,7 @@
     "nobounce": 71,
     "consistency": 65,
     "cam": 75,
-    "device": "PC",
+    "device": "MOB",
     "youtube": "",
     "region": "NA"
   },
@@ -1152,18 +1152,6 @@
     "region": "NA"
   },
   {
-    "id": "2237236110",
-    "name": "ReadyPlayerTooooooo",
-    "display": "iForgotToWipeMyRear",
-    "bounce": 67,
-    "nobounce": 70,
-    "consistency": 57,
-    "cam": 72,
-    "device": "PC",
-    "youtube": "",
-    "region": "NA"
-  },
-  {
     "id": "2409175504",
     "name": "andreienormal",
     "display": "ardei",
@@ -1174,6 +1162,18 @@
     "device": "PC",
     "youtube": "",
     "region": "EU"
+  },
+  {
+    "id": "2237236110",
+    "name": "ReadyPlayerTooooooo",
+    "display": "iForgotToWipeMyRear",
+    "bounce": 67,
+    "nobounce": 70,
+    "consistency": 57,
+    "cam": 72,
+    "device": "PC",
+    "youtube": "",
+    "region": "NA"
   },
   {
     "id": "4080311786",
