@@ -343,7 +343,7 @@
     "nobounce": 87,
     "consistency": 78,
     "cam": 92,
-    "device": "Mob",
+    "device": "Mobile",
     "youtube": "https://www.youtube.com/@hackmenotplease",
     "region": "N/A"
   },
@@ -355,7 +355,7 @@
     "nobounce": 90,
     "consistency": 77,
     "cam": 87,
-    "device": "Mob",
+    "device": "Mobile",
     "youtube": "",
     "region": "N/A"
   },
@@ -367,7 +367,7 @@
     "nobounce": 79,
     "consistency": 83,
     "cam": 82,
-    "device": "Mob",
+    "device": "Mobile",
     "youtube": "https://www.youtube.com/@TempisLazy",
     "region": "EU"
   },
@@ -427,7 +427,7 @@
     "nobounce": 79,
     "consistency": 85,
     "cam": 83,
-    "device": "Mob",
+    "device": "Mobile",
     "youtube": "https://www.youtube.com/@preyforpreyforsteven508",
     "region": "N/A"
   },
@@ -523,7 +523,7 @@
     "nobounce": 82,
     "consistency": 73,
     "cam": 83,
-    "device": "Mob",
+    "device": "Mobile",
     "youtube": "",
     "region": "N/A"
   },
@@ -535,7 +535,7 @@
     "nobounce": 79,
     "consistency": 72,
     "cam": 83,
-    "device": "Mob",
+    "device": "Mobile",
     "youtube": "https://www.youtube.com/@D4rkPlayerz",
     "region": "N/A"
   },
@@ -571,7 +571,7 @@
     "nobounce": 83,
     "consistency": 72,
     "cam": 79,
-    "device": "Mob",
+    "device": "Mobile",
     "youtube": "https://www.youtube.com/@meproateverything",
     "region": "AS"
   },
@@ -612,14 +612,14 @@
     "region": "N/A"
   },
   {
-    "id": "",
-    "name": "Jpsdude",
-    "display": "Jpsdude",
+    "id": "718187374",
+    "name": "Jps123dude",
+    "display": "Jps123dude",
     "bounce": 83,
     "nobounce": 75,
     "consistency": 72,
     "cam": 75,
-    "device": "Mob",
+    "device": "Mobile",
     "youtube": "",
     "region": "N/A"
   },
@@ -631,7 +631,7 @@
     "nobounce": 70,
     "consistency": 73,
     "cam": 77,
-    "device": "Mob",
+    "device": "Mobile",
     "youtube": "https://www.youtube.com/@NickSpeedruns",
     "region": "NA"
   },
@@ -715,7 +715,7 @@
     "nobounce": 77,
     "consistency": 62,
     "cam": 78,
-    "device": "?",
+    "device": "PC",
     "youtube": "",
     "region": "EU"
   },
@@ -739,7 +739,7 @@
     "nobounce": 77,
     "consistency": 61,
     "cam": 76,
-    "device": "Mob",
+    "device": "Mobile",
     "youtube": "",
     "region": "N/A"
   },
@@ -763,7 +763,7 @@
     "nobounce": 68,
     "consistency": 64,
     "cam": 79,
-    "device": "Mob",
+    "device": "Mobile",
     "youtube": "https://www.youtube.com/@Redbull37132",
     "region": "N/A"
   },
@@ -859,7 +859,7 @@
     "nobounce": 69,
     "consistency": 63,
     "cam": 75,
-    "device": "Mob",
+    "device": "Mobile",
     "youtube": "",
     "region": "N/A"
   },
@@ -955,7 +955,7 @@
     "nobounce": 70,
     "consistency": 56,
     "cam": 79,
-    "device": "Mob",
+    "device": "Mobile",
     "youtube": "",
     "region": "N/A"
   },
@@ -967,7 +967,7 @@
     "nobounce": 71,
     "consistency": 61,
     "cam": 78,
-    "device": "Mob",
+    "device": "Mobile",
     "youtube": "",
     "region": "N/A"
   },
@@ -1063,7 +1063,7 @@
     "nobounce": 71,
     "consistency": 65,
     "cam": 75,
-    "device": "Mob",
+    "device": "Mobile",
     "youtube": "",
     "region": "NA"
   },
@@ -1123,7 +1123,7 @@
     "nobounce": 70,
     "consistency": 59,
     "cam": 74,
-    "device": "Mob",
+    "device": "Mobile",
     "youtube": "",
     "region": "NA"
   },
@@ -1135,7 +1135,7 @@
     "nobounce": 73,
     "consistency": 61,
     "cam": 70,
-    "device": "Mob",
+    "device": "Mobile",
     "youtube": "",
     "region": "NA"
   },
