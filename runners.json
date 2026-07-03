@@ -371,7 +371,7 @@
     "nobounce": 87,
     "consistency": 77,
     "cam": 95,
-    "device": "Mobile",
+    "device": "MOB",
     "youtube": "https://www.youtube.com/@hackmenotplease",
     "region": "",
     "status": "inactive"
@@ -397,7 +397,7 @@
     "nobounce": 90,
     "consistency": 79,
     "cam": 87,
-    "device": "Mobile",
+    "device": "MOB",
     "youtube": "",
     "region": "NA",
     "status": "inactive"
@@ -449,7 +449,7 @@
     "nobounce": 81,
     "consistency": 76,
     "cam": 89,
-    "device": "Mobile",
+    "device": "MOB",
     "youtube": "https://www.youtube.com/@TempisLazy",
     "region": "EU",
     "status": "active"
@@ -488,7 +488,7 @@
     "nobounce": 85,
     "consistency": 77,
     "cam": 86,
-    "device": "Mobile",
+    "device": "MOB",
     "youtube": "https://www.youtube.com/@D4rkPlayerz",
     "region": "",
     "status": "active"
@@ -553,7 +553,7 @@
     "nobounce": 79,
     "consistency": 79,
     "cam": 83,
-    "device": "Mobile",
+    "device": "MOB",
     "youtube": "https://www.youtube.com/@preyforpreyforsteven508",
     "region": "",
     "status": "active"
@@ -592,7 +592,7 @@
     "nobounce": 71,
     "consistency": 78,
     "cam": 84,
-    "device": "Mobile",
+    "device": "MOB",
     "youtube": "https://www.youtube.com/@NickSpeedruns",
     "region": "NA",
     "status": "active"
@@ -618,7 +618,7 @@
     "nobounce": 84,
     "consistency": 73,
     "cam": 82,
-    "device": "Mobile",
+    "device": "MOB",
     "youtube": "",
     "region": "",
     "status": "active"
@@ -683,7 +683,7 @@
     "nobounce": 86,
     "consistency": 72,
     "cam": 81,
-    "device": "Mobile",
+    "device": "MOB",
     "youtube": "https://www.youtube.com/@meproateverything",
     "region": "AS",
     "status": "active"
@@ -709,7 +709,7 @@
     "nobounce": 85,
     "consistency": 72,
     "cam": 87,
-    "device": "Mobile",
+    "device": "MOB",
     "youtube": "",
     "region": "NA",
     "status": "active"
@@ -735,7 +735,7 @@
     "nobounce": 77,
     "consistency": 71,
     "cam": 78,
-    "device": "Mobile",
+    "device": "MOB",
     "youtube": "https://www.youtube.com/@Redbull37132",
     "region": "OC",
     "status": "active"
@@ -813,7 +813,7 @@
     "nobounce": 68,
     "consistency": 74,
     "cam": 79,
-    "device": "Mobile",
+    "device": "MOB",
     "youtube": "",
     "region": "NA",
     "status": "active"
@@ -943,7 +943,7 @@
     "nobounce": 75,
     "consistency": 71,
     "cam": 75,
-    "device": "Mobile",
+    "device": "MOB",
     "youtube": "",
     "region": "NA",
     "status": "inactive"
@@ -982,7 +982,7 @@
     "nobounce": 79,
     "consistency": 65,
     "cam": 82,
-    "device": "Mobile",
+    "device": "PC",
     "youtube": "",
     "region": "NA",
     "status": "active"
@@ -995,7 +995,7 @@
     "nobounce": 76,
     "consistency": 71,
     "cam": 77,
-    "device": "Mobile",
+    "device": "MOB",
     "youtube": "https://www.youtube.com/@Billolucko3",
     "region": "",
     "status": "active"
@@ -1008,7 +1008,7 @@
     "nobounce": 80,
     "consistency": 69,
     "cam": 83,
-    "device": "Mobile",
+    "device": "MOB",
     "youtube": "https://www.youtube.com/@dobetteratlife",
     "region": "NA",
     "status": "inactive"
@@ -1112,7 +1112,7 @@
     "nobounce": 76,
     "consistency": 62,
     "cam": 76,
-    "device": "Mobile",
+    "device": "MOB",
     "youtube": "",
     "region": "AS",
     "status": "active"
@@ -1151,7 +1151,7 @@
     "nobounce": 67,
     "consistency": 72,
     "cam": 76,
-    "device": "Mobile",
+    "device": "MOB",
     "youtube": "",
     "region": "NA",
     "status": "active"
@@ -1177,7 +1177,7 @@
     "nobounce": 76,
     "consistency": 64,
     "cam": 78,
-    "device": "Mobile",
+    "device": "MOB",
     "youtube": "https://www.youtube.com/@vuiistspeedruns",
     "region": "",
     "status": "active"
@@ -1194,19 +1194,6 @@
     "youtube": "https://www.youtube.com/@evuuz/videos",
     "region": "NA",
     "status": "inactive"
-  },
-  {
-    "id": "373448911",
-    "name": "cwutesushi",
-    "display": "く33",
-    "bounce": 81,
-    "nobounce": 74,
-    "consistency": 68,
-    "cam": 73,
-    "device": "PC",
-    "youtube": "https://www.youtube.com/@eatpoki",
-    "region": "",
-    "status": "active"
   },
   {
     "id": "1258632732",
@@ -1242,7 +1229,7 @@
     "nobounce": 74,
     "consistency": 63,
     "cam": 80,
-    "device": "Mobile",
+    "device": "MOB",
     "youtube": "",
     "region": "",
     "status": "active"
@@ -1292,12 +1279,11 @@
     "display": "Semi",
     "bounce": 66,
     "nobounce": 76,
-    "consistency": 62,
-    "cam": 86,
+    "consistency": 63,
+    "cam": 82,
     "device": "PC",
     "youtube": "https://www.youtube.com/@SemiAutomaticFire",
     "region": "NA",
     "status": "active"
   }
 ]
-
