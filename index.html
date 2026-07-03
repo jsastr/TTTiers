@@ -388,6 +388,12 @@ body::after{
 
 /* ══ PERFORMANCE MODE — strips animated backgrounds & blur for a smoother, lower-lag experience ══ */
 html.perf-mode{scroll-behavior:auto;}
+/* .banner and .page use opacity:0 + a "forwards" fade-in animation to become visible.
+   Disabling all animation above (for performance) strips that animation away entirely,
+   which drops them back to their literal, undisguised opacity:0 — hiding the whole page,
+   including the toggle button itself, with no way to turn it back off. Pin them visible. */
+html.perf-mode .banner,
+html.perf-mode .page{opacity:1 !important;}
 html.perf-mode #stars-canvas,
 html.perf-mode #mouse-glow{display:none !important;}
 html.perf-mode body::before,
