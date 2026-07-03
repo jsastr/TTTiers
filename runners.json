@@ -563,7 +563,7 @@
     "name": "vasili6741",
     "display": "vasili",
     "bounce": 84,
-    "nobounce": 80,
+    "nobounce": 81,
     "consistency": 77,
     "cam": 82,
     "device": "PC",
@@ -576,7 +576,7 @@
     "name": "Blizzardrust",
     "display": "blitzyblizzy",
     "bounce": 88,
-    "nobounce": 80,
+    "nobounce": 81,
     "consistency": 74,
     "cam": 80,
     "device": "PC",
@@ -590,7 +590,7 @@
     "display": "Nixxci",
     "bounce": 90,
     "nobounce": 71,
-    "consistency": 77,
+    "consistency": 78,
     "cam": 84,
     "device": "MOB",
     "youtube": "https://www.youtube.com/@NickSpeedruns",
@@ -601,7 +601,7 @@
     "id": "7085853583",
     "name": "lamwhoiam_g",
     "display": "iam",
-    "bounce": 82,
+    "bounce": 83,
     "nobounce": 84,
     "consistency": 72,
     "cam": 83,
@@ -624,6 +624,19 @@
     "status": "active"
   },
   {
+    "id": "1686057877",
+    "name": "scatpac392",
+    "display": "Koaz777",
+    "bounce": 82,
+    "nobounce": 81,
+    "consistency": 76,
+    "cam": 82,
+    "device": "PC",
+    "youtube": "",
+    "region": "",
+    "status": "inactive"
+  },
+  {
     "id": "920276399",
     "name": "Alfusa",
     "display": "Alfusa",
@@ -642,7 +655,7 @@
     "display": "Thunder",
     "bounce": 83,
     "nobounce": 84,
-    "consistency": 66,
+    "consistency": 67,
     "cam": 86,
     "device": "PC",
     "youtube": "https://www.youtube.com/@othunderie8941",
@@ -751,6 +764,19 @@
     "device": "PC",
     "youtube": "",
     "region": "",
+    "status": "inactive"
+  },
+  {
+    "id": "516838716",
+    "name": "kacper7124",
+    "display": "Kapis_Bestia",
+    "bounce": 77,
+    "nobounce": 82,
+    "consistency": 75,
+    "cam": 79,
+    "device": "PC",
+    "youtube": "",
+    "region": "EU",
     "status": "inactive"
   },
   {
@@ -1014,19 +1040,6 @@
     "status": "active"
   },
   {
-    "id": "5101122540",
-    "name": "Saad_faleh",
-    "display": "MyAccWasHACKED",
-    "bounce": 81,
-    "nobounce": 76,
-    "consistency": 68,
-    "cam": 75,
-    "device": "PC",
-    "youtube": "",
-    "region": "",
-    "status": "active"
-  },
-  {
     "id": "1900080176",
     "name": "ev0vv",
     "display": "ev0vv",
@@ -1284,19 +1297,6 @@
     "device": "PC",
     "youtube": "https://www.youtube.com/@SemiAutomaticFire",
     "region": "NA",
-    "status": "active"
-  },
-  {
-    "id": "1253142001",
-    "name": "10stwrld",
-    "display": "10stwrld",
-    "bounce": 75,
-    "nobounce": 72,
-    "consistency": 60,
-    "cam": 81,
-    "device": "PC",
-    "youtube": "https://www.youtube.com/@10stwrld",
-    "region": "EU",
     "status": "active"
   }
 ]
