@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="icon" href="favicon.png">
+<meta charset="UTF-8">
+<script>(function(){try{if(localStorage.getItem('tttiers-performance-mode')==='1')document.documentElement.classList.add('perf-mode');}catch(e){}})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TTTiers — Stat Rankings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Nunito:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  
+:root{
+  --bg:#040a14;--surface:rgba(10,22,38,0.6);--surface-alt:rgba(15,30,48,0.68);--card:rgba(8,18,32,0.8);
+  --text:#eaf6ff;--muted:#5d7fa3;--border:rgba(140,200,240,0.16);--border-h:rgba(170,225,255,0.4);
+  --ice:#7dd3fc;--ice-s:rgba(125,211,252,0.14);--ice-d:#38bdf8;
+  --frost:#e0f7ff;--cyan:#22d3ee;
+  --purple:#9d7fea;--purple-s:rgba(157,127,234,0.12);
+  --gold:#f0c419;--gold-s:rgba(240,196,25,0.16);
+  --silver:#cbd5e1;--silver-s:rgba(203,213,225,0.16);
+  --bronze:#e0935a;--bronze-s:rgba(224,147,90,0.16);
+  --tf-bg:rgba(239,68,68,.15);    --tf-c:#fca5a5;
+  --td-bg:rgba(249,115,22,.15);   --td-c:#fdba74;
+  --tc-bg:rgba(234,179,8,.15);    --tc-c:#fde047;
+  --tb-bg:rgba(59,130,246,.15);   --tb-c:#93c5fd;
+  --ta-bg:rgba(45,212,160,.15);   --ta-c:#6ee7b7;
+  --ts-bg:rgba(251,191,36,.18);   --ts-c:#fcd34d;
+  --tss-bg:rgba(157,127,234,.2);  --tss-c:#c4b5fd;
+  --tz-bg:rgba(236,72,153,.22);   --tz-c:#f9a8d4;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;scrollbar-gutter:stable;}
+body{font-family:'Nunito',sans-serif;color:var(--text);min-height:100vh;overflow-x:hidden;background:#040a14;}
+
+@keyframes pageFadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+/* ══ STARFIELD CANVAS — twinkling stars, drifting snow, shooting stars ══ */
+#starfield-canvas{
+  position:fixed;
+  inset:0;
+  z-index:-4;
+  pointer-events:none;
+  width:100%;
+  height:100%;
+}
+
+/* ══ FROST BACKDROP — two static gradient layers cross-fading via opacity ══
+   (previously a single layer animated its `background` property directly,
+   which forces a full-viewport repaint every frame; opacity is
+   compositor-only, so this reads the same but is far cheaper to run.
+   Also: the old version ended its gradient list with a solid #040a14,
+   which made this layer fully OPAQUE and sat above the star canvases in
+   the stacking order — that's why no stars were visible at all. Dropping
+   the solid color and moving the canvas to the back fixes that.) */
+body::before{
+  content:'';position:fixed;inset:0;z-index:-3;pointer-events:none;
+  background:
+    radial-gradient(ellipse 80% 50% at 18% 0%,  rgba(125,211,252,.18), transparent 58%),
+    radial-gradient(ellipse 55% 45% at 88% 8%,  rgba(224,247,255,.10), transparent 55%),
+    radial-gradient(ellipse 60% 60% at 50% 100%,rgba(34,211,238,.12), transparent 62%),
+    radial-gradient(ellipse 38% 32% at 4%  72%, rgba(56,189,248,.10), transparent 54%),
+    radial-gradient(ellipse 30% 28% at 92% 65%, rgba(224,247,255,.07), transparent 50%);
+}
+body::after{
+  content:'';position:fixed;inset:0;z-index:-2;pointer-events:none;
+  background:
+    radial-gradient(ellipse 80% 50% at 45% 1%,  rgba(56,189,248,.20), transparent 58%),
+    radial-gradient(ellipse 55% 45% at 92% 24%, rgba(34,211,238,.12), transparent 55%),
+    radial-gradient(ellipse 60% 60% at 8%  88%, rgba(125,211,252,.12), transparent 62%),
+    radial-gradient(ellipse 38% 32% at 65% 78%, rgba(224,247,255,.08), transparent 54%),
+    radial-gradient(ellipse 30% 28% at 20% 45%, rgba(56,189,248,.07), transparent 50%);
+  animation:frostFade 24s ease-in-out infinite alternate;
+  will-change:opacity;
+}
+@keyframes frostFade{
+  0%{opacity:0;}
+  50%{opacity:.6;}
+  100%{opacity:1;}
+}
+
+/* ══ BANNER ══ */
+.banner{
+  position:relative;z-index:2;
+  background:linear-gradient(135deg,#03070f 0%,#06101c 45%,#040c16 75%,#03070f 100%);
+  border-bottom:1px solid rgba(125,211,252,.22);
+  overflow:hidden;padding:0 24px;
+  opacity:0;animation:pageFadeIn .7s ease forwards;
+}
+.banner::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(-55deg,transparent,transparent 40px,rgba(125,211,252,.018) 40px,rgba(125,211,252,.018) 41px);
+  pointer-events:none;
+}
+.banner::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(125,211,252,.55),rgba(224,247,255,.4),transparent);}
+
+.banner-inner{max-width:1320px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px 0;gap:12px;flex-wrap:wrap;}
+.brand{display:flex;align-items:center;gap:12px;}
+.brand-mark{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#7dd3fc,#0ea5e9);display:flex;align-items:center;justify-content:center;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:14px;color:#04141f;box-shadow:0 0 24px rgba(125,211,252,.45),0 0 0 1px rgba(125,211,252,.25);}
+.brand-name{font-family:'Rajdhani',sans-serif;font-size:1.5rem;font-weight:700;letter-spacing:.02em;color:#fff;}
+.brand-sub{font-size:.7rem;color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-top:1px;}
+
+.banner-nav{display:flex;align-items:center;gap:6px;}
+.nav-link{color:var(--muted);text-decoration:none;font-size:.82rem;font-weight:700;padding:7px 16px;border-radius:8px;border:1px solid transparent;transition:all .18s;display:flex;align-items:center;gap:6px;font-family:'Nunito',sans-serif;}
+.nav-link:hover{color:var(--text);background:rgba(255,255,255,.06);border-color:var(--border);}
+.nav-link svg{width:14px;height:14px;fill:currentColor;opacity:.7;}
+
+.mode-btn{display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:8px;border:1px solid rgba(125,211,252,.3);background:rgba(125,211,252,.08);color:var(--text);font-family:'Nunito',sans-serif;font-weight:700;font-size:.82rem;cursor:pointer;transition:all .18s;}
+.mode-btn:hover{background:rgba(125,211,252,.16);border-color:rgba(125,211,252,.5);}
+.mode-btn svg{width:14px;height:14px;fill:var(--ice);}
+.mode-chip{font-size:.7rem;font-weight:800;color:var(--ice);background:rgba(125,211,252,.15);padding:2px 8px;border-radius:5px;border:1px solid rgba(125,211,252,.25);}
+
+/* ── HERO ── */
+.hero{text-align:center;padding:44px 24px 32px;background:linear-gradient(180deg,rgba(125,211,252,.05) 0%,transparent 100%);position:relative;z-index:1;}
+.hero-eyebrow{display:inline-flex;align-items:center;justify-content:center;gap:6px;font-size:.72rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase;padding:6px 16px;border-radius:999px;background:rgba(125,211,252,.12);border:1px solid rgba(125,211,252,.4);color:#bae6fd;margin:0 auto 12px;box-shadow:0 0 18px rgba(125,211,252,.3);}
+.hero-eyebrow svg{flex-shrink:0;}
+.hero h1{font-family:'Rajdhani',sans-serif;font-size:clamp(2.2rem,5vw,3.8rem);font-weight:700;letter-spacing:.02em;line-height:1;color:#fff;text-shadow:0 0 50px rgba(125,211,252,.25);}
+.hero h1 em{font-style:normal;color:var(--ice);}
+.hero-sub{margin:10px auto 0;max-width:480px;color:var(--muted);font-size:.88rem;line-height:1.7;}
+
+/* ── STAT TABS ── */
+.stat-tabs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:0 24px 20px;position:relative;z-index:1;}
+.stat-tab{display:flex;align-items:center;gap:8px;padding:9px 18px;border-radius:10px;border:1px solid var(--border);background:rgba(8,18,32,0.55);backdrop-filter:blur(6px);cursor:pointer;font-size:.82rem;font-weight:700;color:var(--muted);transition:all .2s;font-family:'Nunito',sans-serif;}
+.stat-tab:hover{border-color:var(--border-h);color:var(--text);background:rgba(15,30,48,0.68);}
+.stat-tab.active{background:var(--ice-s);border-color:rgba(125,211,252,.4);color:var(--ice);}
+.tab-icon{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0;font-family:'JetBrains Mono',monospace;}
+
+/* ══ LEADERBOARD FRAME — unified frosted housing for the stat panes ══ */
+.leaderboard-frame{
+  position:relative;margin:0 24px;
+  background:rgba(4,9,18,0.55);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border:1px solid rgba(125,211,252,.2);
+  border-radius:18px;padding:3px;
+  box-shadow:0 8px 56px rgba(0,0,0,.6),0 0 0 1px rgba(125,211,252,.05),inset 0 1px 0 rgba(224,247,255,.08);
+  z-index:1;
+}
+.leaderboard-frame::before{content:'';position:absolute;top:0;left:14px;right:14px;height:1px;background:linear-gradient(90deg,transparent,rgba(224,247,255,.55),transparent);pointer-events:none;}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:3px;border-radius:16px;overflow:hidden;}
+
+.stat-col{background:rgba(9,19,34,0.6);display:none;}
+.stat-col.visible{display:block;}
+
+.col-header{position:relative;padding:13px 16px;background:linear-gradient(180deg,rgba(125,211,252,.07),rgba(125,211,252,.02));border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.col-header::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent,var(--ice));opacity:.85;}
+.col-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;font-family:'JetBrains Mono',monospace;}
+.col-title{font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;letter-spacing:.02em;}
+.col-sub{font-size:.65rem;color:var(--muted);margin-top:1px;font-weight:600;}
+
+.col-subheader{display:grid;grid-template-columns:46px 1fr 60px 60px;gap:2px;padding:8px 16px;background:rgba(125,211,252,.03);border-bottom:1px solid var(--border);font-size:.58rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);}
+.col-subheader div{display:flex;align-items:center;}
+.col-subheader div:not(:nth-child(2)){justify-content:center;}
+
+.col-list{list-style:none;padding:0;margin:0;}
+
+.col-row{display:grid;grid-template-columns:46px 1fr 60px 60px;gap:2px;align-items:center;padding:12px 16px;min-height:70px;border-bottom:1px solid rgba(125,211,252,.05);cursor:pointer;transition:background .15s;position:relative;}
+.col-row:last-child{border-bottom:none;}
+.col-row:hover{background:rgba(125,211,252,.08);}
+.col-row:hover::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--ice);border-radius:0 2px 2px 0;}
+
+.col-row.rank-1{background:linear-gradient(90deg,rgba(240,196,25,.14) 0%,rgba(240,196,25,.04) 60%,transparent 100%);box-shadow:inset 0 0 0 1px rgba(240,196,25,.22);}
+.col-row.rank-2{background:linear-gradient(90deg,rgba(203,213,225,.13) 0%,rgba(203,213,225,.04) 60%,transparent 100%);box-shadow:inset 0 0 0 1px rgba(203,213,225,.2);}
+.col-row.rank-3{background:linear-gradient(90deg,rgba(224,147,90,.13) 0%,rgba(224,147,90,.04) 60%,transparent 100%);box-shadow:inset 0 0 0 1px rgba(224,147,90,.22);}
+.col-row.rank-1:hover{background:linear-gradient(90deg,rgba(240,196,25,.2) 0%,rgba(240,196,25,.07) 60%,transparent 100%);}
+.col-row.rank-2:hover{background:linear-gradient(90deg,rgba(203,213,225,.19) 0%,rgba(203,213,225,.07) 60%,transparent 100%);}
+.col-row.rank-3:hover{background:linear-gradient(90deg,rgba(224,147,90,.19) 0%,rgba(224,147,90,.07) 60%,transparent 100%);}
+
+.col-rank{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:9px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.88rem;background:rgba(255,255,255,.05);color:var(--muted);}
+.col-rank.rank-1{background:var(--gold-s);color:var(--gold);box-shadow:0 0 10px rgba(240,196,25,.3);}
+.col-rank.rank-2{background:var(--silver-s);color:var(--silver);box-shadow:0 0 8px rgba(203,213,225,.25);}
+.col-rank.rank-3{background:var(--bronze-s);color:var(--bronze);box-shadow:0 0 8px rgba(224,147,90,.25);}
+
+.col-info{display:flex;align-items:center;gap:10px;min-width:0;}
+.col-avatar{width:36px;height:36px;border-radius:50%;border:2px solid rgba(125,211,252,.35);background:rgba(8,18,32,.8);object-fit:cover;flex-shrink:0;opacity:0;transition:opacity .3s,box-shadow .2s;box-shadow:0 0 0 1px rgba(255,255,255,.05),0 2px 8px rgba(0,0,0,.3);}
+.col-row.rank-1 .col-avatar{border-color:var(--gold);box-shadow:0 0 0 1px rgba(255,255,255,.06),0 0 12px var(--gold-s);}
+.col-row.rank-2 .col-avatar{border-color:var(--silver);box-shadow:0 0 0 1px rgba(255,255,255,.06),0 0 12px var(--silver-s);}
+.col-row.rank-3 .col-avatar{border-color:var(--bronze);box-shadow:0 0 0 1px rgba(255,255,255,.06),0 0 12px var(--bronze-s);}
+.col-text{min-width:0;flex:1;}
+.col-name{font-weight:700;font-size:.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff;display:flex;align-items:center;gap:4px;}
+.col-display{font-size:.68rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;}
+
+.crown-icon{display:inline-flex;align-items:center;flex-shrink:0;filter:drop-shadow(0 0 4px currentColor);}
+.crown-icon svg{width:12px;height:12px;display:block;}
+.crown-1{color:var(--gold);}
+.crown-2{color:var(--silver);}
+.crown-3{color:var(--bronze);}
+
+.col-score-cell{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;}
+.score-num{font-family:'JetBrains Mono',monospace;font-size:.88rem;font-weight:700;color:var(--text);}
+
+.tier-badge{display:inline-flex;align-items:center;justify-content:center;font-size:.58rem;font-weight:800;padding:2px 5px;border-radius:4px;letter-spacing:.04em;min-width:20px;font-family:'JetBrains Mono',monospace;}
+.tier-f  {background:var(--tf-bg); color:var(--tf-c);}
+.tier-d  {background:var(--td-bg); color:var(--td-c);}
+.tier-c  {background:var(--tc-bg); color:var(--tc-c);}
+.tier-b  {background:var(--tb-bg); color:var(--tb-c);}
+.tier-a  {background:var(--ta-bg); color:var(--ta-c);}
+.tier-s  {background:var(--ts-bg); color:var(--ts-c);}
+.tier-ss {background:var(--tss-bg);color:var(--tss-c);}
+.tier-z  {background:var(--tz-bg); color:var(--tz-c);}
+
+.skeleton-row{height:70px;background:linear-gradient(90deg,rgba(10,20,35,.7) 25%,rgba(15,28,46,.85) 50%,rgba(10,20,35,.7) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-bottom:1px solid rgba(125,211,252,.05);}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* ══ OVERLAYS ══ */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(10px);z-index:200;align-items:center;justify-content:center;padding:20px;}
+.overlay.open{display:flex;}
+@keyframes popIn{from{opacity:0;transform:scale(.88) translateY(16px)}to{opacity:1;transform:scale(1) translateY(0)}}
+
+.mode-popup{
+  background:rgba(6,14,26,0.92);backdrop-filter:blur(16px);
+  border:1px solid rgba(125,211,252,.22);
+  border-radius:18px;padding:28px 24px 24px;
+  max-width:440px;width:100%;max-height:88vh;overflow-y:auto;
+  animation:popIn .26s cubic-bezier(.34,1.56,.64,1);
+}
+.mode-popup-title{font-family:'Rajdhani',sans-serif;font-size:1.2rem;font-weight:700;margin-bottom:4px;letter-spacing:.02em;}
+.mode-popup-sub{font-size:.82rem;color:var(--muted);margin-bottom:22px;line-height:1.5;}
+.mode-options{display:flex;flex-direction:column;gap:9px;margin-bottom:18px;}
+.mode-option{
+  display:flex;align-items:center;gap:14px;padding:13px 16px;
+  border-radius:12px;border:1px solid var(--border);background:rgba(6,14,26,.7);
+  cursor:pointer;transition:all .18s;text-align:left;width:100%;
+  font-family:'Nunito',sans-serif;color:var(--text);
+}
+.mode-option:hover{border-color:var(--border-h);background:rgba(10,22,38,.8);}
+.mode-option.selected{border-color:rgba(125,211,252,.4);background:var(--ice-s);}
+.mode-option-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+.mode-option-text strong{display:block;font-size:.88rem;font-weight:800;margin-bottom:2px;}
+.mode-option-text span{font-size:.74rem;color:var(--muted);}
+.mode-divider{height:1px;background:var(--border);margin:4px 0;}
+.mode-apply{
+  width:100%;padding:12px;background:var(--ice);color:#03141f;
+  border:none;border-radius:10px;cursor:pointer;
+  font-family:'Nunito',sans-serif;font-weight:800;font-size:.9rem;
+  transition:opacity .18s,transform .1s;
+}
+.mode-apply:hover{opacity:.88;transform:translateY(-1px);}
+
+.popup{
+  background:rgba(5,12,22,0.92);backdrop-filter:blur(16px);
+  border:1px solid rgba(125,211,252,.2);
+  border-radius:22px;padding:26px 22px 22px;
+  max-width:370px;width:100%;max-height:88vh;overflow-y:auto;position:relative;
+  animation:popIn .26s cubic-bezier(.34,1.56,.64,1);
+}
+.popup-rank-badge{position:absolute;top:20px;left:20px;width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;background:rgba(255,255,255,.05);color:var(--muted);font-family:'Rajdhani',sans-serif;}
+.popup-rank-badge.rank-1{background:var(--gold-s);color:var(--gold);}
+.popup-rank-badge.rank-2{background:var(--silver-s);color:var(--silver);}
+.popup-rank-badge.rank-3{background:var(--bronze-s);color:var(--bronze);}
+.popup-header{text-align:center;margin-bottom:14px;}
+#popup-avatar{width:70px;height:70px;border-radius:50%;border:2px solid var(--ice);object-fit:cover;margin-bottom:9px;box-shadow:0 0 22px rgba(125,211,252,.3);}
+.popup-name{font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:700;letter-spacing:.02em;}
+.popup-display-name{font-size:.78rem;color:var(--muted);margin-top:2px;}
+.popup-meta{display:flex;gap:6px;justify-content:center;margin-top:8px;flex-wrap:wrap;}
+.popup-tag{font-size:.68rem;font-weight:700;padding:3px 9px;border-radius:5px;background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--border);text-transform:uppercase;display:inline-flex;align-items:center;gap:3px;font-family:'Nunito',sans-serif;}
+.popup-stats{display:grid;gap:4px;margin-bottom:13px;}
+.p-stat-row{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-radius:8px;background:rgba(10,20,35,.7);border:1px solid var(--border);}
+.p-stat-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;}
+.p-stat-value{display:flex;align-items:baseline;gap:4px;font-family:'JetBrains Mono',monospace;font-size:.95rem;font-weight:600;}
+.p-stat-max{font-size:.65rem;color:var(--muted);opacity:.5;}
+.p-stat-row.nb-row{border-color:rgba(157,127,234,.2);background:rgba(157,127,234,.05);}
+.p-stat-row.nb-row .p-stat-label{color:var(--purple);}
+.p-stat-row.ov-row{border-color:rgba(125,211,252,.25);background:rgba(125,211,252,.06);}
+.p-stat-row.ov-row .p-stat-label{color:var(--ice);}
+.p-stat-row.ov-row .p-stat-value{font-size:1.1rem;color:var(--ice);}
+.p-stat-row.highlight-row{outline:1px solid var(--ice);box-shadow:0 0 0 3px rgba(125,211,252,.15);}
+.popup-links{display:flex;gap:8px;margin-bottom:11px;}
+.popup-link{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px;border-radius:9px;border:1px solid var(--border);background:rgba(10,20,35,.7);color:var(--muted);text-decoration:none;font-size:.8rem;font-weight:700;transition:all .18s;}
+.popup-link:hover{color:var(--ice);border-color:rgba(125,211,252,.3);background:var(--ice-s);}
+.popup-link img{width:14px;height:14px;border-radius:3px;object-fit:contain;}
+.popup-close{width:100%;padding:11px;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:9px;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:700;font-size:.86rem;transition:all .18s;}
+.popup-close:hover{background:var(--ice-s);color:var(--ice);border-color:rgba(125,211,252,.3);}
+
+@media(max-width:900px){
+  .stats-grid{grid-template-columns:1fr;}
+}
+@media(max-width:640px){
+  .leaderboard-frame{margin:0 12px;}
+  .stat-tabs{padding:0 12px 16px;}
+  .banner-inner{padding:10px 0;}
+  .hero h1{font-size:1.9rem;}
+}
+@media(prefers-reduced-motion:reduce){
+  .banner{animation:none;opacity:1;}
+  body::after{animation:none;}
+}
+
+/* ══ PERFORMANCE MODE — strips animated backgrounds & blur for a smoother, lower-lag experience ══ */
+html.perf-mode{scroll-behavior:auto;}
+html.perf-mode #starfield-canvas{display:none !important;}
+html.perf-mode body::before,
+html.perf-mode body::after{display:none !important;}
+html.perf-mode *,
+html.perf-mode *::before,
+html.perf-mode *::after{
+  animation:none !important;
+  transition:none !important;
+}
+html.perf-mode .stat-tab,
+html.perf-mode .leaderboard-frame,
+html.perf-mode .mode-popup,
+html.perf-mode .popup{
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+}
+
+.perf-btn{display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:8px;border:1px solid rgba(240,196,25,.32);background:rgba(240,196,25,.08);color:var(--text);font-family:'Nunito',sans-serif;font-weight:700;font-size:.82rem;cursor:pointer;transition:all .18s;}
+.perf-btn:hover{background:rgba(240,196,25,.16);border-color:rgba(240,196,25,.55);}
+.perf-btn svg{width:14px;height:14px;fill:var(--gold);flex-shrink:0;}
+.perf-chip{font-size:.7rem;font-weight:800;color:var(--gold);background:rgba(240,196,25,.15);padding:2px 8px;border-radius:5px;border:1px solid rgba(240,196,25,.25);}
+.perf-btn.is-on{border-color:rgba(127,255,122,.5);background:rgba(127,255,122,.12);}
+.perf-btn.is-on svg{fill:#7fff7a;}
+.perf-btn.is-on .perf-chip{color:#7fff7a;background:rgba(127,255,122,.15);border-color:rgba(127,255,122,.3);}
+</style>
+</head>
+<body>
+
+  <!-- Starfield Canvas -->
+<canvas id="starfield-canvas"></canvas>
+
+<!-- ══ BANNER ══ -->
+<header class="banner">
+  <div class="banner-inner">
+    <div class="brand">
+      <div class="brand-mark">TT</div>
+      <div>
+        <div class="brand-name">TTTiers</div>
+        <div class="brand-sub">Stat Rankings</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+      <button class="perf-btn" id="perf-mode-btn" title="Turn off animated backgrounds and blur for a smoother, lower-lag experience">
+        <svg viewBox="0 0 24 24"><path d="M11 21h-1l1-7H7.5c-.88 0-.33-.75-.31-.78C8.48 10.94 10.42 7.54 13.01 3h1l-1 7h3.51c.4 0 .62.19.4.66C12.97 17.55 11 21 11 21z"/></svg>
+        Performance Mode
+        <span class="perf-chip" id="perf-chip">Off</span>
+      </button>
+      <button class="mode-btn" id="mode-selector-btn">
+        <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+        View
+        <span class="mode-chip" id="mode-label-text">Stat Rankings</span>
+      </button>
+      <nav class="banner-nav">
+        <a href="index.html" class="nav-link">
+          <svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
+          Leaderboard
+        </a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<div class="page">
+  <!-- ── HERO ── -->
+  <section class="hero">
+    <div class="hero-eyebrow">
+      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="4" y1="7" x2="20" y2="17"/><line x1="20" y1="7" x2="4" y2="17"/></svg>
+      Individual Stat Rankings
+    </div>
+    <h1>Who tops each <em>category?</em></h1>
+    <p class="hero-sub">Every runner ranked per individual stat. Pick a tab or view all four side by side.</p>
+  </section>
+
+  <!-- ── STAT TABS ── -->
+  <div class="stat-tabs" id="stat-tabs">
+    <button class="stat-tab active" data-stat="all">
+      <span class="tab-icon" style="background:rgba(255,255,255,.08);">🏆</span> All Stats
+    </button>
+    <button class="stat-tab" data-stat="bounce">
+      <span class="tab-icon" style="background:rgba(251,191,36,.15);color:#fbbf24;">B</span> Bounce
+    </button>
+    <button class="stat-tab" data-stat="consistency">
+      <span class="tab-icon" style="background:rgba(45,212,160,.15);color:#2dd4a0;">C</span> Consistency
+    </button>
+    <button class="stat-tab" data-stat="cam">
+      <span class="tab-icon" style="background:rgba(249,115,22,.15);color:#f97316;">CM</span> Cam Control
+    </button>
+    <button class="stat-tab" data-stat="nobounce">
+      <span class="tab-icon" style="background:rgba(157,127,234,.15);color:#9d7fea;">NB</span> No Bounce
+    </button>
+  </div>
+
+  <!-- ══ LEADERBOARD FRAME ══ -->
+  <div class="leaderboard-frame">
+    <div class="stats-grid" id="stats-grid">
+      <!-- skeleton placeholders -->
+      <div class="stat-col visible" style="opacity:.5">
+        <div class="col-header"><div class="col-icon" style="background:rgba(251,191,36,.1);"></div><div><div class="col-title" style="height:12px;background:var(--surface-alt);border-radius:4px;width:80px;"></div></div></div>
+        <ul class="col-list"><li class="skeleton-row"></li><li class="skeleton-row"></li><li class="skeleton-row"></li><li class="skeleton-row"></li></ul>
+      </div>
+      <div class="stat-col visible" style="opacity:.5">
+        <div class="col-header"><div class="col-icon" style="background:rgba(45,212,160,.1);"></div><div></div></div>
+        <ul class="col-list"><li class="skeleton-row"></li><li class="skeleton-row"></li><li class="skeleton-row"></li><li class="skeleton-row"></li></ul>
+      </div>
+      <div class="stat-col visible" style="opacity:.5">
+        <div class="col-header"><div class="col-icon" style="background:rgba(249,115,22,.1);"></div><div></div></div>
+        <ul class="col-list"><li class="skeleton-row"></li><li class="skeleton-row"></li><li class="skeleton-row"></li><li class="skeleton-row"></li></ul>
+      </div>
+      <div class="stat-col visible" style="opacity:.5">
+        <div class="col-header"><div class="col-icon" style="background:rgba(157,127,234,.1);"></div><div></div></div>
+        <ul class="col-list"><li class="skeleton-row"></li><li class="skeleton-row"></li><li class="skeleton-row"></li><li class="skeleton-row"></li></ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODE OVERLAY ══ -->
+<div id="mode-overlay" class="overlay">
+  <div class="mode-popup">
+    <div class="mode-popup-title">Choose a View</div>
+    <div class="mode-popup-sub">Filter by platform or jump to a different page.</div>
+    <div class="mode-options">
+      <button class="mode-option" data-mode="all" data-page="index.html">
+        <div class="mode-option-icon" style="background:rgba(125,211,252,.12);">🏆</div>
+        <div class="mode-option-text"><strong>All Players</strong><span>Everyone ranked by overall score</span></div>
+      </button>
+      <button class="mode-option" data-mode="pc" data-page="index.html">
+        <div class="mode-option-icon" style="background:rgba(96,165,250,.12);">🖥️</div>
+        <div class="mode-option-text"><strong>PC Only</strong><span>Desktop / keyboard players only</span></div>
+      </button>
+      <button class="mode-option" data-mode="mobile" data-page="index.html">
+        <div class="mode-option-icon" style="background:rgba(157,127,234,.12);">📱</div>
+        <div class="mode-option-text"><strong>Mobile Only</strong><span>Touchscreen players only</span></div>
+      </button>
+      <div class="mode-divider"></div>
+      <button class="mode-option selected" data-mode="stats" data-page="stats.html">
+        <div class="mode-option-icon" style="background:rgba(125,211,252,.15);">📊</div>
+        <div class="mode-option-text"><strong>Stat Rankings</strong><span>Top players per individual stat</span></div>
+      </button>
+    </div>
+    <button class="mode-apply" id="mode-apply">Apply View</button>
+  </div>
+</div>
+
+<!-- ══ PLAYER POPUP ══ -->
+<div id="player-overlay" class="overlay">
+  <div class="popup">
+    <div id="popup-rank-badge" class="popup-rank-badge"></div>
+    <div class="popup-header">
+      <img id="popup-avatar" src="" alt="Player avatar">
+      <div class="popup-name" id="popup-main-name"></div>
+      <div class="popup-display-name" id="popup-display-name"></div>
+      <div class="popup-meta">
+        <span class="popup-tag" id="popup-region"></span>
+        <span class="popup-tag" id="popup-device"></span>
+      </div>
+    </div>
+    <div class="popup-links">
+      <a id="popup-roblox" href="#" target="_blank" class="popup-link">
+        <img src="roblox.png" alt="" onerror="this.style.display='none'"> Roblox
+      </a>
+      <a id="popup-youtube" href="#" target="_blank" class="popup-link" style="display:none">
+        <img src="youtube.png" alt="" onerror="this.style.display='none'"> YouTube
+      </a>
+    </div>
+    <div class="popup-stats">
+      <div class="p-stat-row" id="pr-bounce"><span class="p-stat-label">Bounce</span><span class="p-stat-value" id="popup-bounce"></span></div>
+      <div class="p-stat-row" id="pr-consistency"><span class="p-stat-label">Consistency</span><span class="p-stat-value" id="popup-consistency"></span></div>
+      <div class="p-stat-row" id="pr-cam"><span class="p-stat-label">Camera Control</span><span class="p-stat-value" id="popup-cam"></span></div>
+      <div class="p-stat-row nb-row" id="pr-nobounce"><span class="p-stat-label">No Bounce</span><span class="p-stat-value" id="popup-nobounce"></span></div>
+      <div class="p-stat-row ov-row"><span class="p-stat-label">Overall</span><span class="p-stat-value" id="popup-overall"></span></div>
+    </div>
+    <button class="popup-close" id="popup-close">Close</button>
+  </div>
+</div>
+
+<script>
+/* ══ UNIFIED STARFIELD — twinkling stars, drifting snow, shooting stars ══
+   (previously two separate canvases each running their own animation loop
+   — up to ~1700 particles redrawn across two full-viewport clears every
+   frame, uncapped. Merged into one canvas/one loop, frame-rate capped,
+   paused on hidden tabs, and resize is debounced.) */
+(function(){
+  const c=document.getElementById('starfield-canvas');
+  const ctx=c.getContext('2d');
+  let W,H,stars=[],flakes=[],shooters=[];
+  let lastFrame=0;
+  const FRAME_MS=1000/40; // background decoration doesn't need 60fps
+  let resizeTimer;
+
+  function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}
+
+  function mkParticles(){
+    const area=W*H;
+    stars=[];
+    const n=Math.min(220,Math.floor(area/6000));
+    for(let i=0;i<n;i++){
+      stars.push({
+        x:Math.random()*W, y:Math.random()*H,
+        r:Math.random()*1.5+0.3,
+        dx:(Math.random()-0.5)*0.06,
+        dy:(Math.random()-0.5)*0.04,
+        phase:Math.random()*Math.PI*2,
+        ts:0.004+Math.random()*0.014,
+        tinted:Math.random()<0.3,
+      });
+    }
+    flakes=[];
+    const m=Math.min(70,Math.floor(area/22000));
+    for(let i=0;i<m;i++){
+      flakes.push({
+        x:Math.random()*W, y:Math.random()*H,
+        r:Math.random()*1.8+1.2,
+        vy:Math.random()*0.3+0.15,
+        vx:(Math.random()-0.5)*0.2,
+        sway:Math.random()*Math.PI*2,
+        sspeed:0.01+Math.random()*0.02,
+        a:Math.random()*0.3+0.15,
+      });
+    }
+  }
+
+  function spawnShooter(){
+    if(shooters.length>=2)return;
+    const spd=6+Math.random()*7;
+    const ang=(18+Math.random()*20)*Math.PI/180;
+    shooters.push({
+      x:Math.random()*W*0.6+W*0.2, y:Math.random()*H*0.3,
+      vx:Math.cos(ang)*spd, vy:Math.sin(ang)*spd,
+      life:1, decay:0.011+Math.random()*0.009,
+      len:60+Math.random()*90,
+    });
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // twinkling stars
+    stars.forEach(s=>{
+      s.x+=s.dx; s.y+=s.dy;
+      if(s.x<0)s.x=W; if(s.x>W)s.x=0;
+      if(s.y<0)s.y=H; if(s.y>H)s.y=0;
+      s.phase+=s.ts;
+      const a=0.2+0.7*Math.abs(Math.sin(s.phase));
+      ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle=s.tinted?`hsla(195,75%,90%,${a})`:`rgba(235,247,255,${a})`;
+      ctx.fill();
+    });
+    // gentle snow
+    flakes.forEach(f=>{
+      f.sway+=f.sspeed;
+      f.y+=f.vy; f.x+=f.vx+Math.sin(f.sway)*0.15;
+      if(f.y>H+4){f.y=-4;f.x=Math.random()*W;}
+      if(f.x<-4)f.x=W+4; if(f.x>W+4)f.x=-4;
+      ctx.beginPath();ctx.arc(f.x,f.y,f.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(224,247,255,${f.a})`;
+      ctx.fill();
+    });
+    // shooting stars
+    shooters=shooters.filter(s=>s.life>0);
+    shooters.forEach(s=>{
+      const len=s.len/Math.hypot(s.vx,s.vy);
+      const tx=s.x-s.vx*len, ty=s.y-s.vy*len;
+      const g=ctx.createLinearGradient(tx,ty,s.x,s.y);
+      g.addColorStop(0,'rgba(224,247,255,0)');
+      g.addColorStop(1,`rgba(224,247,255,${s.life*0.9})`);
+      ctx.save();ctx.beginPath();ctx.moveTo(tx,ty);ctx.lineTo(s.x,s.y);
+      ctx.strokeStyle=g;ctx.lineWidth=1.6*s.life;ctx.stroke();ctx.restore();
+      s.x+=s.vx;s.y+=s.vy;s.life-=s.decay;
+    });
+  }
+
+  function loop(ts){
+    requestAnimationFrame(loop);
+    if(document.hidden||document.documentElement.classList.contains('perf-mode'))return; // don't burn CPU on a background tab or in performance mode
+    if(ts-lastFrame<FRAME_MS)return; // frame-rate cap
+    lastFrame=ts;
+    draw();
+  }
+
+  window.addEventListener('resize',()=>{
+    clearTimeout(resizeTimer);
+    resizeTimer=setTimeout(()=>{resize();mkParticles();},150); // debounce so dragging the window doesn't rebuild the particle arrays dozens of times
+  },{passive:true});
+
+  resize();mkParticles();
+  setInterval(()=>{if(!document.hidden&&!document.documentElement.classList.contains('perf-mode')&&Math.random()<0.4)spawnShooter();},2600);
+  requestAnimationFrame(loop);
+})();
+
+/* ══ PERFORMANCE MODE TOGGLE ══ */
+(function(){
+  const KEY='tttiers-performance-mode';
+  const btn=document.getElementById('perf-mode-btn');
+  const chip=document.getElementById('perf-chip');
+  function apply(on){
+    document.documentElement.classList.toggle('perf-mode',on);
+    if(btn)btn.classList.toggle('is-on',on);
+    if(chip)chip.textContent=on?'On':'Off';
+  }
+  apply(document.documentElement.classList.contains('perf-mode'));
+  if(btn)btn.onclick=()=>{
+    const next=!document.documentElement.classList.contains('perf-mode');
+    try{localStorage.setItem(KEY,next?'1':'0');}catch(e){}
+    apply(next);
+  };
+})();
+
+/* ══ STAT RANKINGS LOGIC (unchanged) ══ */
+const REGION_MAP={
+  NA:{name:"North America",color:"#60a5fa",bg:"rgba(96,165,250,.18)"},
+  EU:{name:"Europe",color:"#34d399",bg:"rgba(52,211,153,.18)"},
+  OC:{name:"Oceania",color:"#fbbf24",bg:"rgba(251,191,36,.18)"},
+  AS:{name:"Asia",color:"#f87171",bg:"rgba(248,113,113,.18)"},
+  SA:{name:"South America",color:"#a78bfa",bg:"rgba(167,139,250,.18)"},
+  AF:{name:"Africa",color:"#fb923c",bg:"rgba(251,146,60,.18)"},
+  "N/A":{name:"Unknown",color:"#6b8aaa",bg:"rgba(107,138,170,.12)"}
+};
+const TIERS=[
+  {min:0,  max:29,  cls:"tier-f",  label:"F"},
+  {min:30, max:49,  cls:"tier-d",  label:"D"},
+  {min:50, max:69,  cls:"tier-c",  label:"C"},
+  {min:70, max:79,  cls:"tier-b",  label:"B"},
+  {min:80, max:89,  cls:"tier-a",  label:"A"},
+  {min:90, max:94,  cls:"tier-s",  label:"S"},
+  {min:95, max:99,  cls:"tier-ss", label:"SS"},
+  {min:100,max:100, cls:"tier-z",  label:"Z"},
+];
+function getTier(v){return TIERS.find(t=>v>=t.min&&v<=t.max)||TIERS[0];}
+function getRegion(c){return REGION_MAP[(c||"").toUpperCase()]||REGION_MAP["N/A"];}
+function calcOverall(r){return(r.bounce||0)+(r.nobounce||0)+(r.consistency||0)+(r.cam||0);}
+function sv(v,max=100){return `${v}<span class="p-stat-max"> / ${max}</span>`;}
+function crownIcon(rank){
+  if(rank>3)return"";
+  return `<span class="crown-icon crown-${rank}"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 16L3 7l5.5 4L12 4l3.5 7L21 7l-2 9H5zm0 2h14v2H5v-2z"/></svg></span>`;
+}
+
+const STAT_DEFS=[
+  {key:"bounce",      label:"Bounce",      sub:"Ball control & bounce skill",  color:"#fbbf24", icon:"B"},
+  {key:"consistency", label:"Consistency", sub:"Reliability across runs",      color:"#2dd4a0", icon:"C"},
+  {key:"cam",         label:"Cam Control", sub:"Camera movement mastery",      color:"#f97316", icon:"CM"},
+  {key:"nobounce",    label:"No Bounce",   sub:"Performance without bounce",   color:"#9d7fea", icon:"NB"},
+];
+
+let allRunners=[];
+const avatarCache={};
+let pendingMode="stats";
+
+function buildColumns(runners){
+  const grid=document.getElementById("stats-grid");
+  grid.innerHTML="";
+  STAT_DEFS.forEach(def=>{
+    const sorted=[...runners].sort((a,b)=>(b[def.key]||0)-(a[def.key]||0));
+    const col=document.createElement("div");
+    col.className="stat-col visible";col.dataset.stat=def.key;
+    col.style.setProperty('--accent',def.color);
+    col.innerHTML=`
+      <div class="col-header">
+        <div class="col-icon" style="background:${def.color}20;color:${def.color}">${def.icon}</div>
+        <div>
+          <div class="col-title" style="color:${def.color}">${def.label}</div>
+          <div class="col-sub">${def.sub}</div>
+        </div>
+      </div>
+      <div class="col-subheader">
+        <div>#</div><div>Player</div><div>Score</div><div>Tier</div>
+      </div>
+      <ul class="col-list" id="col-${def.key}">
+        ${sorted.map((r,i)=>{
+          const rank=i+1,val=r[def.key]||0,t=getTier(val);
+          const rc=rank===1?"rank-1":rank===2?"rank-2":rank===3?"rank-3":"";
+          return `<li class="col-row ${rc}" data-userid="${r.id}" data-stat="${def.key}">
+            <div class="col-rank ${rc}">${rank}</div>
+            <div class="col-info">
+              <img class="col-avatar" loading="lazy" src="" alt="${r.name}" data-uid="${r.id}">
+              <div class="col-text">
+                <div class="col-name">${crownIcon(rank)}@${r.name}</div>
+                <div class="col-display">(${r.display})</div>
+              </div>
+            </div>
+            <div class="col-score-cell"><span class="score-num" style="color:${def.color}">${val}</span></div>
+            <div class="col-score-cell"><span class="tier-badge ${t.cls}">${t.label}</span></div>
+          </li>`;
+        }).join("")}
+      </ul>`;
+    grid.appendChild(col);
+  });
+  document.querySelectorAll(".col-row").forEach(row=>{
+    row.onclick=()=>{const r=allRunners.find(x=>x.id==row.dataset.userid);if(r)openPopup(r,row.dataset.stat);};
+  });
+  loadColAvatars();
+}
+
+function filterColumns(stat){
+  document.querySelectorAll(".stat-col").forEach(c=>c.classList.toggle("visible",stat==="all"||c.dataset.stat===stat));
+  document.querySelectorAll(".stat-tab").forEach(tab=>{
+    const active=tab.dataset.stat===stat;
+    tab.classList.toggle("active",active);
+  });
+}
+
+async function openPopup(runner,highlightStat){
+  const sorted=[...allRunners].sort((a,b)=>calcOverall(b)-calcOverall(a));
+  const rank=sorted.findIndex(r=>r.id==runner.id)+1;
+  const rb=document.getElementById("popup-rank-badge");
+  rb.textContent="#"+rank;rb.className="popup-rank-badge"+(rank<=3?" rank-"+rank:"");
+  document.getElementById("popup-main-name").textContent="@"+runner.name;
+  document.getElementById("popup-display-name").textContent="("+runner.display+")";
+  const reg=getRegion(runner.region);
+  const rel=document.getElementById("popup-region");
+  rel.textContent=reg.name;rel.style.color=reg.color;rel.style.borderColor=reg.color+"40";rel.style.background=reg.bg;
+  document.getElementById("popup-device").textContent=runner.device||"Unknown";
+  document.getElementById("popup-bounce").innerHTML=sv(runner.bounce||0);
+  document.getElementById("popup-consistency").innerHTML=sv(runner.consistency||0);
+  document.getElementById("popup-cam").innerHTML=sv(runner.cam||0);
+  document.getElementById("popup-nobounce").innerHTML=sv(runner.nobounce||0);
+  document.getElementById("popup-overall").innerHTML=sv(calcOverall(runner),400);
+  document.getElementById("popup-roblox").href=`https://www.roblox.com/users/${runner.id}/profile`;
+  const yt=document.getElementById("popup-youtube");
+  yt.style.display=(runner.youtube&&runner.youtube.trim())?"flex":"none";
+  if(runner.youtube)yt.href=runner.youtube;
+  ["pr-bounce","pr-consistency","pr-cam","pr-nobounce"].forEach(id=>{
+    document.getElementById(id).classList.remove("highlight-row");
+  });
+  if(highlightStat){
+    const map={bounce:"pr-bounce",consistency:"pr-consistency",cam:"pr-cam",nobounce:"pr-nobounce"};
+    if(map[highlightStat])document.getElementById(map[highlightStat]).classList.add("highlight-row");
+  }
+  const img=document.getElementById("popup-avatar");img.src="";
+  if(avatarCache[runner.id]){img.src=avatarCache[runner.id];}
+  else{try{const res=await fetch(`https://thumbnails.roproxy.com/v1/users/avatar-headshot?userIds=${runner.id}&size=150x150&format=Png&isCircular=true`);const d=await res.json();if(d.data?.[0]){avatarCache[runner.id]=d.data[0].imageUrl;img.src=d.data[0].imageUrl;}}catch(e){}}
+  document.getElementById("player-overlay").classList.add("open");
+  document.body.style.overflow="hidden";
+}
+
+function closeOv(id){document.getElementById(id).classList.remove("open");document.body.style.overflow="";}
+
+async function loadColAvatars(){
+  const imgs=Array.from(document.querySelectorAll(".col-avatar"));
+  const ids=[...new Set(imgs.map(i=>i.dataset.uid).filter(Boolean))];
+  imgs.forEach(i=>{if(avatarCache[i.dataset.uid]){i.src=avatarCache[i.dataset.uid];i.style.opacity="1";}});
+  for(let i=0;i<ids.length;i+=100){
+    try{
+      const res=await fetch(`https://thumbnails.roproxy.com/v1/users/avatar-headshot?userIds=${ids.slice(i,i+100).join(",")}&size=150x150&format=Png&isCircular=true`);
+      const d=await res.json();
+      d.data?.forEach(x=>{avatarCache[x.targetId]=x.imageUrl;document.querySelectorAll(`.col-avatar[data-uid="${x.targetId}"]`).forEach(img=>{img.src=x.imageUrl;img.style.opacity="1";});});
+      if(i+100<ids.length)await new Promise(r=>setTimeout(r,300));
+    }catch(e){}
+  }
+}
+
+// Mode selector
+document.getElementById("mode-selector-btn").onclick=()=>{
+  pendingMode="stats";
+  document.querySelectorAll(".mode-option").forEach(o=>o.classList.toggle("selected",o.dataset.mode==="stats"));
+  document.getElementById("mode-overlay").classList.add("open");
+  document.body.style.overflow="hidden";
+};
+document.querySelectorAll(".mode-option").forEach(btn=>{
+  btn.onclick=function(){
+    pendingMode=this.dataset.mode;
+    document.querySelectorAll(".mode-option").forEach(o=>o.classList.remove("selected"));
+    this.classList.add("selected");
+  };
+});
+document.getElementById("mode-apply").onclick = () => {
+  closeOv("mode-overlay");
+
+  const modeLabel = document.getElementById("mode-label-text");
+
+  if (pendingMode === "stats") {
+    modeLabel.textContent = "Stat Rankings";
+    return;
+  }
+
+  if (pendingMode === "all") {
+    modeLabel.textContent = "All Players";
+    window.location.href = "index.html";
+  }
+  else if (pendingMode === "pc") {
+    modeLabel.textContent = "PC Only";
+    window.location.href = "index.html?mode=pc";
+  }
+  else if (pendingMode === "mobile") {
+    modeLabel.textContent = "Mobile Only";
+    window.location.href = "index.html?mode=mobile";
+  }
+};
+document.getElementById("mode-overlay").addEventListener("click",e=>{if(!e.target.closest(".mode-popup"))closeOv("mode-overlay");});
+document.getElementById("popup-close").onclick=()=>closeOv("player-overlay");
+document.getElementById("player-overlay").addEventListener("click",e=>{if(!e.target.closest(".popup"))closeOv("player-overlay");});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeOv("player-overlay");closeOv("mode-overlay");}});
+
+document.getElementById("stat-tabs").addEventListener("click",e=>{const tab=e.target.closest(".stat-tab");if(tab)filterColumns(tab.dataset.stat);});
+
+async function init(){
+  try{
+    const res=await fetch("runners.json");
+    allRunners=await res.json();
+    buildColumns(allRunners);
+  }catch(err){
+    document.getElementById("stats-grid").innerHTML=`<p style="text-align:center;color:var(--muted);padding:40px;grid-column:1/-1">Could not load runners.json</p>`;
+  }
+}
+window.addEventListener("DOMContentLoaded",init);
+</script>
+</body>
+</html>
