@@ -830,6 +830,18 @@ function deviceSVG(d){
 }
 function regionBadge(r){const reg=getRegion(r.region);const code=(r.region||"N/A").toUpperCase();return`<span class="region-badge" data-full="${reg.name}" style="background:${reg.bg};color:${reg.color};border:1px solid ${reg.color}40;">${code}</span>`;}
 function statusPill(r){const isActive=(r.status||"active")==="active";return`<span class="status-pill ${isActive?"active":"inactive"}"><span class="status-dot ${isActive?"active":"inactive"}"></span>${isActive?"Active":"Inactive"}</span>`;}
+/* ══ RANK MOVEMENT WORKFLOW ══
+   The ↑/↓ badges compare runners.json against runners-previous.json — a plain
+   snapshot file living next to it. This file is NOT generated automatically.
+   To make badges appear after an update:
+     1. Before editing runners.json, copy the CURRENT runners.json and save
+        that copy as runners-previous.json (same folder).
+     2. Edit runners.json as usual with the new scores.
+     3. Upload/deploy both files together.
+   Every visitor's browser then computes the same before/after comparison from
+   these two static files, so everyone sees identical badges — nothing is
+   stored per-browser. If runners-previous.json is missing (e.g. the very
+   first time you do this), no badges show — that's expected, not a bug. */
 function rankDeltaHTML(id){
   const d=rankDeltas[id];
   if(!d)return"";
@@ -1067,27 +1079,37 @@ function clearSlot(slot){
 
 async function init(){
   try{
-    const res=await fetch("runners.json");let runners=await res.json();
+    const [res,prevRes]=await Promise.all([
+      fetch("runners.json",{cache:"no-store"}),
+      fetch("runners-previous.json",{cache:"no-store"}).catch(()=>null)
+    ]);
+    let runners=await res.json();
     runners.forEach(r=>r._overall=(r.bounce||0)+(r.nobounce||0)+(r.consistency||0)+(r.cam||0));
     runners.sort((a,b)=>b._overall-a._overall);
     allRunnersData=runners;
 
-    // ── rank-movement tracking: compare this load's overall rank order to the
-    //    order recorded on the previous load, so we can show who moved and by how much ──
-    const RANK_KEY="tttiers-rank-history-all";
-    let prevRanks={};
-    try{prevRanks=JSON.parse(localStorage.getItem(RANK_KEY)||"{}");}catch(e){prevRanks={};}
-    const currentRanks={};
+    // ── rank-movement tracking: compare this load's overall rank order to
+    //    runners-previous.json — a snapshot of the leaderboard from before the
+    //    last edit. This is a shared static file, not per-browser storage, so
+    //    every visitor sees the exact same movement badges regardless of their
+    //    own browsing history. See the note above renderPage() for the workflow. ──
     rankDeltas={};
-    allRunnersData.forEach((r,i)=>{
-      const rank=i+1;
-      currentRanks[r.id]=rank;
-      if(prevRanks[r.id]!=null){
-        const delta=prevRanks[r.id]-rank; // positive = moved up (lower rank number)
-        if(delta!==0)rankDeltas[r.id]=delta;
-      }
-    });
-    try{localStorage.setItem(RANK_KEY,JSON.stringify(currentRanks));}catch(e){}
+    if(prevRes&&prevRes.ok){
+      try{
+        let prevRunners=await prevRes.json();
+        prevRunners.forEach(r=>r._overall=(r.bounce||0)+(r.nobounce||0)+(r.consistency||0)+(r.cam||0));
+        prevRunners.sort((a,b)=>b._overall-a._overall);
+        const prevRanks={};
+        prevRunners.forEach((r,i)=>{prevRanks[r.id]=i+1;});
+        allRunnersData.forEach((r,i)=>{
+          const rank=i+1;
+          if(prevRanks[r.id]!=null){
+            const delta=prevRanks[r.id]-rank; // positive = moved up (lower rank number)
+            if(delta!==0)rankDeltas[r.id]=delta;
+          }
+        });
+      }catch(e){/* missing/malformed snapshot — just show no badges this load */}
+    }
 
     setupCompareSearch('a');setupCompareSearch('b');applyMode("all");
     document.getElementById("search").addEventListener("keydown",e=>{
