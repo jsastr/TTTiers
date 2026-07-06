@@ -494,6 +494,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-
   .compare-picker{grid-template-columns:1fr;}
   .compare-players{grid-template-columns:1fr auto 1fr;}
   .compare-stat-row{grid-template-columns:1fr 50px 1fr;}
+  .rank-delta{display:none !important;}
 }
 @media(max-width:640px){
   .ab{filter:blur(26px) !important;}
@@ -544,6 +545,15 @@ html.perf-mode .player-item:hover{
 .perf-btn.is-on{border-color:rgba(127,255,122,.5);background:rgba(127,255,122,.12);}
 .perf-btn.is-on svg{fill:#7fff7a;}
 .perf-btn.is-on .perf-chip{color:#7fff7a;background:rgba(127,255,122,.15);border-color:rgba(127,255,122,.3);}
+
+/* ══ RANK MOVEMENT INDICATOR — shows position change since the last time runners.json was loaded ══ */
+.rank-delta{
+  display:inline-flex;align-items:center;gap:3px;flex-shrink:0;margin-left:8px;
+  font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:800;
+  padding:3px 9px;border-radius:999px;line-height:1;white-space:nowrap;
+}
+.rank-delta.up{background:rgba(127,255,122,.16);color:#7fff7a;border:1px solid rgba(127,255,122,.34);}
+.rank-delta.down{background:rgba(255,79,109,.14);color:#ff4f6d;border:1px solid rgba(255,79,109,.32);}
 </style>
 </head>
 <body>
@@ -966,9 +976,16 @@ function regionBadge(r){
   const reg=getRegion(r.region);const code=(r.region||"N/A").toUpperCase();
   return`<span class="region-badge" data-full="${reg.name}" style="background:${reg.bg};color:${reg.color};border:1px solid ${reg.color}40;">${code}</span>`;
 }
+function rankDeltaHTML(id){
+  const d=rankDeltas[id];
+  if(!d)return"";
+  if(d>0)return`<span class="rank-delta up" title="Moved up ${d} place${d>1?"s":""} since the last runners.json update">↑ ${d}</span>`;
+  return`<span class="rank-delta down" title="Moved down ${Math.abs(d)} place${Math.abs(d)>1?"s":""} since the last runners.json update">↓ ${Math.abs(d)}</span>`;
+}
 
 const PER_PAGE=20;
 let allActive=[],filteredData=[],currentPage=1,totalPages=1,currentFilter="all";
+let rankDeltas={};
 const avatarCache={};
 let compareA=null,compareB=null,currentOpenRunner=null;
 
@@ -1005,6 +1022,7 @@ function renderPage(page){
           <div class="player-username">${crownIcon(rank)}${deviceSVG(r.device)} @${r.name}</div>
           <div class="player-meta">${regionBadge(r)}<span class="player-display">(${r.display||r.name})</span></div>
         </div>
+        ${rankDeltaHTML(r.id)}
       </div>
       <div class="score-cell"><span class="score-num">${r.bounce||0}</span>${tbHTML(r.bounce||0)}</div>
       <div class="score-cell"><span class="score-num">${r.nobounce||0}</span>${tbHTML(r.nobounce||0)}</div>
@@ -1223,6 +1241,23 @@ async function init(){
       .filter(r=>(r.status||"active")==="active")
       .map(r=>({...r,_overall:(r.bounce||0)+(r.nobounce||0)+(r.consistency||0)+(r.cam||0)}))
       .sort((a,b)=>b._overall-a._overall);
+
+    // ── rank-movement tracking (kept separate from index.html's key since this
+    //    leaderboard only ranks active runners against each other) ──
+    const RANK_KEY="tttiers-rank-history-active";
+    let prevRanks={};
+    try{prevRanks=JSON.parse(localStorage.getItem(RANK_KEY)||"{}");}catch(e){prevRanks={};}
+    const currentRanks={};
+    rankDeltas={};
+    allActive.forEach((r,i)=>{
+      const rank=i+1;
+      currentRanks[r.id]=rank;
+      if(prevRanks[r.id]!=null){
+        const delta=prevRanks[r.id]-rank;
+        if(delta!==0)rankDeltas[r.id]=delta;
+      }
+    });
+    try{localStorage.setItem(RANK_KEY,JSON.stringify(currentRanks));}catch(e){}
 
     const overalls=allActive.map(r=>r._overall);
     document.getElementById("stat-count").textContent=allActive.length;
